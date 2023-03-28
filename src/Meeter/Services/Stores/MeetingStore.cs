@@ -12,15 +12,15 @@ internal class MeetingStore : IMeetingStore
     // FixMe [2023/03/28 kiril] remove dummy data
     public MeetingStore()
     {
-        for (int i = 1; i <= 3; i++)
+        for (var i = -2; i <= 3; i++)
         {
             _meetings.Add(new Meeting
             {
                 Id                   = Guid.NewGuid(),
-                Subject              = $"Message #{i} ({DateTime.UtcNow.AddSeconds(10 * i)})",
+                Subject              = $"Message #{i}",
                 StartDateTime        = DateTime.UtcNow.AddMinutes(10 * i),
                 EndDateTime          = DateTime.UtcNow.AddMinutes(10 * i + 60),
-                NotifyBeforeTime     = TimeSpan.FromMinutes(9 * i),
+                NotifyBeforeTime     = TimeSpan.FromMinutes(Math.Abs(9 * i)),
                 HasBeenNotifiedAbout = false,
             });
         }

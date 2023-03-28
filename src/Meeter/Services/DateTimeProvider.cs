@@ -2,7 +2,7 @@
 
 namespace Meeter.Services;
 
-class DateTimeProvider : IDateTimeProvider
+internal class DateTimeProvider : IDateTimeProvider
 {
     public DateTime UtcNow => DateTime.UtcNow;
 }

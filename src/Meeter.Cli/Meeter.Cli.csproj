@@ -8,9 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Meeter\Meeter.csproj" />
+        <ProjectReference Include="..\Meeter\Meeter.csproj" />
     </ItemGroup>
 
-
+    <ItemGroup>
+        <PackageReference Include="Terminal.Gui" Version="1.10.0" />
+    </ItemGroup>
 
 </Project>

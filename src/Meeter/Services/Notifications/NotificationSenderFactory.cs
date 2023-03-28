@@ -8,6 +8,7 @@ public class NotificationSenderFactory : INotificationSenderFactory
     {
         var dateTimeProvider = new DateTimeProvider();
         var store = new MeetingStoreProvider().Get();
+
         return new NotificationSender(store, dateTimeProvider);
     }
 }

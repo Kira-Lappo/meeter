@@ -5,13 +5,19 @@ using Meeter.Models;
 
 namespace Meeter.Services.Stores;
 
-class MeetingProvider : IMeetingProvider
+internal class MeetingService : IMeetingService
 {
     private readonly IMeetingStore _meetingStore;
-
-    public MeetingProvider(IMeetingStore meetingStore)
+    public MeetingService(IMeetingStore meetingStore)
     {
         _meetingStore = meetingStore;
+    }
+
+    public IEnumerable<Meeting> GetByStartDate(DateTime date)
+    {
+        return _meetingStore
+            .GetAll()
+            .Where(m => m.StartDateTime.Date == date.Date);
     }
 
     public IEnumerable<Meeting> FindOverlappingMeetings(DateTime startDateTime, DateTime endDateTime)

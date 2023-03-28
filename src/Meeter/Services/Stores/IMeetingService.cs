@@ -4,7 +4,9 @@ using Meeter.Models;
 
 namespace Meeter.Services.Stores;
 
-public interface IMeetingProvider
+public interface IMeetingService
 {
+    IEnumerable<Meeting> GetByStartDate(DateTime date);
+
     IEnumerable<Meeting> FindOverlappingMeetings(DateTime startDateTime, DateTime endDateTime);
 }

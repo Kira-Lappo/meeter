@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Timers;
 using Meeter.Models;
 using Meeter.Services.Stores;
@@ -12,7 +11,6 @@ namespace Meeter.Services.Notifications;
 internal class NotificationSender : INotificationSender
 {
     private const int ConversationId = 424242;
-    private const string HeaderId = "424242";
 
     private readonly IMeetingStore _meetingStore;
     private readonly IDateTimeProvider _dateTimeProvider;
@@ -27,11 +25,11 @@ internal class NotificationSender : INotificationSender
 
     public void Start()
     {
-        // FixMe [2023/03/28 kiril] move values to constants or some config
+        // Todo [2023/03/28 kiril] move values to constants or some config
         _timer = new Timer()
         {
-            Enabled = true,
-            Interval = 10 * 1000,
+            Enabled   = true,
+            Interval  = 10 * 1000,
             AutoReset = true,
         };
 
@@ -55,17 +53,11 @@ internal class NotificationSender : INotificationSender
     {
         var now = _dateTimeProvider.UtcNow;
 
-        // FixMe [2023/03/28 kiril] remove console writeline
         return _meetingStore.GetAll()
-            .Where(m =>
-            {
-                var result = ShouldBeNotified(m, now);
-                Console.WriteLine($"{JsonSerializer.Serialize(m)} : WillBeSent ({result})");
-                return result;
-            });
+            .Where(m => ShouldBeSent(m, now));
     }
 
-    private bool ShouldBeNotified(Meeting meeting, DateTime dateTimeBorder)
+    private bool ShouldBeSent(Meeting meeting, DateTime dateTimeBorder)
     {
         if (meeting.HasBeenNotifiedAbout)
         {

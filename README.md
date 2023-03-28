@@ -12,5 +12,5 @@ Executable will be placed in `/out` directory.
 
 ## targets
 
-works only on windows 10 and higher 
+works only on windows 10 and higher
 as far as it uses UWP notifications 

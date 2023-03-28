@@ -7,6 +7,6 @@ param(
 
 dotnet publish $PSScriptRoot/src/Meeter.Cli `
     -c Release  `
-    -p:PublishProfile="publish.pubxml"  `
-    -p:RuntimeIdentifier="$RID"  `
+    -p:PublishProfile = "publish.pubxml"  `
+    -p:RuntimeIdentifier = "$RID"  `
     -o "$PSScriptRoot/out/$RID"

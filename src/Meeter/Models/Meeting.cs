@@ -14,7 +14,5 @@ public class Meeting
 
     public TimeSpan NotifyBeforeTime { get; set; }
 
-    public DateTime ExpectedNotifDateTime => StartDateTime - NotifyBeforeTime;
-
     public bool HasBeenNotifiedAbout { get; set; }
 }
