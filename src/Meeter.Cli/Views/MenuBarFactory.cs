@@ -9,12 +9,12 @@ public class MenuBarProvider
     {
         var menu = new MenuBar(new MenuBarItem[]
         {
-            new("_Meetings", new MenuItem[]
+            new("_Встречи", new MenuItem[]
             {
-                new("_Reload Meetings", string.Empty, () => ReloadMeetings(window)),
-                new("_Add", string.Empty, NotImplemented),
+                new("_Перезагрузить", string.Empty, () => ReloadMeetings(window)),
+                new("_Добавить", string.Empty, NotImplemented),
             }),
-            new("_Quit", string.Empty, RequestExitFromApp),
+            new("_Выход", string.Empty, RequestExitFromApp),
         });
 
         return menu;
