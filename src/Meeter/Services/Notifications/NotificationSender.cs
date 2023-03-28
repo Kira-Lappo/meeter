@@ -1,0 +1,116 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Timers;
+using Meeter.Models;
+using Meeter.Services.Stores;
+using Microsoft.Toolkit.Uwp.Notifications;
+
+namespace Meeter.Services.Notifications;
+
+internal class NotificationSender : INotificationSender
+{
+    private const int ConversationId = 424242;
+    private const string HeaderId = "424242";
+
+    private readonly IMeetingStore _meetingStore;
+    private readonly IDateTimeProvider _dateTimeProvider;
+
+    private Timer _timer;
+
+    public NotificationSender(IMeetingStore meetingStore, IDateTimeProvider dateTimeProvider)
+    {
+        _meetingStore     = meetingStore;
+        _dateTimeProvider = dateTimeProvider;
+    }
+
+    public void Start()
+    {
+        // FixMe [2023/03/28 kiril] move values to constants or some config
+        _timer = new Timer()
+        {
+            Enabled = true,
+            Interval = 10 * 1000,
+            AutoReset = true,
+        };
+
+        _timer.Elapsed += SendNotifications;
+        _timer.Start();
+    }
+
+    private void SendNotifications(object sender, ElapsedEventArgs e)
+    {
+        var meetings = GetMeetingsToNotifyAbout();
+        foreach (var meeting in meetings)
+        {
+            SendNotification(meeting);
+
+            meeting.HasBeenNotifiedAbout = true;
+            _meetingStore.Update(meeting);
+        }
+    }
+
+    private IEnumerable<Meeting> GetMeetingsToNotifyAbout()
+    {
+        var now = _dateTimeProvider.UtcNow;
+
+        // FixMe [2023/03/28 kiril] remove console writeline
+        return _meetingStore.GetAll()
+            .Where(m =>
+            {
+                var result = ShouldBeNotified(m, now);
+                Console.WriteLine($"{JsonSerializer.Serialize(m)} : WillBeSent ({result})");
+                return result;
+            });
+    }
+
+    private bool ShouldBeNotified(Meeting meeting, DateTime dateTimeBorder)
+    {
+        if (meeting.HasBeenNotifiedAbout)
+        {
+            return false;
+        }
+
+        if (meeting.EndDateTime < dateTimeBorder)
+        {
+            return false;
+        }
+
+        if (meeting.StartDateTime < dateTimeBorder)
+        {
+            return true;
+        }
+
+        var notifyAtDateTime = meeting.StartDateTime - meeting.NotifyBeforeTime;
+
+        return notifyAtDateTime <= dateTimeBorder;
+    }
+
+    private void SendNotification(Meeting meeting)
+    {
+        new ToastContentBuilder()
+            .AddArgument("action",         "viewConversation")
+            .AddArgument("conversationId", ConversationId)
+            .AddText(meeting.Subject)
+            .AddText($"Meeting at {GetLocalTimeString(meeting.StartDateTime)}")
+            .AddText($"Until {GetLocalTimeString(meeting.EndDateTime)}")
+            .Show();
+    }
+
+    private static string GetLocalTimeString(DateTime dateTime)
+    {
+        return dateTime.ToLocalTime().ToString("g");
+    }
+
+    public void Dispose()
+    {
+        if (_timer != default)
+        {
+            _timer.Stop();
+            _timer.Elapsed -= SendNotifications;
+            _timer?.Dispose();
+            _timer = null;
+        }
+    }
+}

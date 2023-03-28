@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
     </PropertyGroup>
@@ -10,5 +10,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Meeter\Meeter.csproj" />
     </ItemGroup>
+
+
 
 </Project>
