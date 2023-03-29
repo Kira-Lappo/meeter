@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Meeter.Models;
+using Meeter.Services.Stores;
 
-namespace Meeter.Services.Stores;
+namespace Meeter.Services;
 
-internal class MeetingService : IMeetingService
+public class MeetingService : IMeetingService
 {
     private readonly IMeetingStore _meetingStore;
     public MeetingService(IMeetingStore meetingStore)
@@ -13,7 +14,7 @@ internal class MeetingService : IMeetingService
         _meetingStore = meetingStore;
     }
 
-    public IEnumerable<Meeting> GetByStartDate(DateTime date)
+    public IEnumerable<Meeting> GetAllByStartDate(DateTime date)
     {
         return _meetingStore
             .GetAll()

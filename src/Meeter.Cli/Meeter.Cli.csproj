@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Terminal.Gui" Version="1.10.0" />
+      <PackageReference Include="ConsoleTables" Version="2.4.2" />
     </ItemGroup>
 
 </Project>
