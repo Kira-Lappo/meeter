@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Timers;
+﻿using System.Timers;
 using Meeter.Models;
 using Meeter.Services.Stores;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Timer = System.Timers.Timer;
 
 namespace Meeter.Services.Notifications;
 

@@ -1,8 +1,6 @@
-﻿using Meeter.Cli.Services.Menus.MeetingPrints;
-using Meeter.Services;
-using Meeter.Services.Stores;
+﻿using Meeter.Services.Stores;
 
-namespace Meeter.Cli.Services.Menus.MeetingRemovals;
+namespace Meeter.Cli.Services.Menus;
 
 public class MeetingDeleteMenuAction : IMenuAction
 {

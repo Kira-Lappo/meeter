@@ -1,6 +1,6 @@
 ﻿using Meeter.Models;
 
-namespace Meeter.Cli.Services.Menus.MeetingExports;
+namespace Meeter.Services.Exports;
 
 public interface IMeetingExportService
 {

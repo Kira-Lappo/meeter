@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Meeter;
+﻿namespace Meeter;
 
 public static class StringExtensions
 {

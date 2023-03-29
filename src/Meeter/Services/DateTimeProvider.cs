@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Meeter.Services;
+﻿namespace Meeter.Services;
 
 public class DateTimeProvider : IDateTimeProvider
 {

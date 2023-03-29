@@ -1,7 +1,8 @@
 ﻿using Meeter.Models;
 using Meeter.Services;
+using Meeter.Services.Exports;
 
-namespace Meeter.Cli.Services.Menus.MeetingExports;
+namespace Meeter.Cli.Services.Menus;
 
 public class MeetingExportMenuAction : IMenuAction
 {

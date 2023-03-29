@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Meeter;
+﻿namespace Meeter;
 
 public static class DateTimeRangeHelper
 {

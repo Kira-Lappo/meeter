@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Meeter.Models;
+﻿namespace Meeter.Models;
 
 public class Meeting
 {

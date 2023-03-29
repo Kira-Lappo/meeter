@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Meeter.Services.Notifications;
+﻿namespace Meeter.Services.Notifications;
 
 public interface INotificationSender : IDisposable
 {

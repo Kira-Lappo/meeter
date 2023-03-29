@@ -1,6 +1,6 @@
 ﻿using Meeter.Services.Stores;
 
-namespace Meeter.Cli.Services.Menus.NewMeetings;
+namespace Meeter.Cli.Services.Menus;
 
 public class NewMeetingMenuAction : IMenuAction
 {

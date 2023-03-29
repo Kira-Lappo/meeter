@@ -1,8 +1,7 @@
 ﻿using Meeter.Models;
-using Meeter.Services;
 using Meeter.Services.Stores;
 
-namespace Meeter.Cli.Services.Menus.MeetingEdits;
+namespace Meeter.Cli.Services.Menus;
 
 public class EditMeetingMenuAction : IMenuAction
 {
