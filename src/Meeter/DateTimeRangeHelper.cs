@@ -15,6 +15,6 @@ public static class DateTimeRangeHelper
             return secondStart < firstEnd;
         }
 
-        return HasOverlap(secondStart, secondEnd, firstStart, firstStart);
+        return HasOverlap(secondStart, secondEnd, firstStart, firstEnd);
     }
 }
