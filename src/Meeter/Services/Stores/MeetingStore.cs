@@ -9,23 +9,6 @@ internal class MeetingStore : IMeetingStore
 {
     private readonly List<Meeting> _meetings = new();
 
-    // FixMe [2023/03/28 kiril] remove dummy data
-    public MeetingStore()
-    {
-        for (var i = -2; i <= 3; i++)
-        {
-            _meetings.Add(new Meeting
-            {
-                Id                   = Guid.NewGuid(),
-                Subject              = $"Message #{i}",
-                StartDateTime        = DateTime.UtcNow.AddMinutes(10 * i),
-                EndDateTime          = DateTime.UtcNow.AddMinutes(10 * i + 60),
-                NotifyBeforeTime     = TimeSpan.FromMinutes(Math.Abs(9 * i)),
-                HasBeenNotifiedAbout = false,
-            });
-        }
-    }
-
     public IEnumerable<Meeting> GetAll()
     {
         return new List<Meeting>(_meetings);

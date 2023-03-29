@@ -1,4 +1,5 @@
 ﻿using Meeter.Cli.Services;
+using Meeter.Cli.Services.Menus;
 using Meeter.Cli.Services.Menus.MeetingEdits;
 using Meeter.Cli.Services.Menus.MeetingExports;
 using Meeter.Cli.Services.Menus.MeetingPrints;
@@ -34,13 +35,17 @@ public static class AppSetup
 
         var editMeetingMenuAction = new EditMeetingMenuAction(meetingStore, meetingConsoleFinder, meetingReader);
 
+        var dummyDataMenuAction = new DummyDataMenuAction(meetingStore);
+
         app.Add("Добавить", "1", newMeetingActionService);
         app.Add("Изменить", "2", editMeetingMenuAction);
         app.Add("Удалить",  "3", deleteMeetingActionService);
 
         app.Add("Встречи по дате", "4", printActionService);
 
-        app.Add("Экспорт", "9", exportActionService);
+        app.Add("Экспорт", "5", exportActionService);
+
+        app.Add("Сгенерировать встречи", "9", dummyDataMenuAction);
 
         app.Add("Выход", "0", app.RequestStop);
     }
