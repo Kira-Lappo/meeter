@@ -19,7 +19,7 @@ public class ConsoleInputReader
 
         Console.WriteLine(prompt);
 
-        var input = Console.ReadLine();
+        var input = ReadTextInput();
         if (string.IsNullOrWhiteSpace(input) && defaultValue != default)
         {
             timeSpan = defaultValue.Value;
@@ -50,11 +50,11 @@ public class ConsoleInputReader
 
     public bool TryReadDateTime(out DateTime dateTime, string prompt = default, DateTime? defaultValue = default)
     {
-        prompt = CreatePrompt(prompt, defaultValue, "Введите дату");
+        prompt = CreatePrompt(prompt, defaultValue?.ToLocalTime(), "Введите дату");
 
         Console.WriteLine(prompt);
 
-        var input = Console.ReadLine();
+        var input = ReadTextInput();
         if (string.IsNullOrWhiteSpace(input) && defaultValue != default)
         {
             dateTime = defaultValue.Value;
@@ -77,7 +77,7 @@ public class ConsoleInputReader
         prompt = CreatePrompt(prompt, defaultValue, "Введите число");
         Console.WriteLine(prompt);
 
-        var input = Console.ReadLine();
+        var input = ReadTextInput();
 
         if (int.TryParse(input, out value))
         {
@@ -116,7 +116,7 @@ public class ConsoleInputReader
         prompt = CreatePrompt(prompt, defaultValue, "Введите текст");
         Console.WriteLine(prompt);
 
-        return Console.ReadLine();
+        return ReadTextInput();
     }
 
     private bool TryParseDateTimeWithNow(string input, out DateTime dateTime)
@@ -129,8 +129,9 @@ public class ConsoleInputReader
             return true;
         }
 
-        if (DateTime.TryParse(input, out dateTime))
+        if (DateTime.TryParse(input,  out dateTime))
         {
+            dateTime = dateTime.ToUniversalTime();
             return true;
         }
 
@@ -148,5 +149,13 @@ public class ConsoleInputReader
         prompt += ":";
 
         return prompt;
+    }
+
+    private static string ReadTextInput()
+    {
+        Console.Write("> ");
+        var input = Console.ReadLine();
+
+        return input;
     }
 }

@@ -40,8 +40,8 @@ public class MeetingsPrintService
             var values = new List<object>()
             {
                 m.Subject,
-                m.StartDateTime,
-                m.EndDateTime,
+                m.StartDateTime.ToLocalTime(),
+                m.EndDateTime.ToLocalTime(),
                 m.NotifyBeforeTime,
                 m.HasBeenNotifiedAbout
             };

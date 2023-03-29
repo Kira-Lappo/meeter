@@ -8,15 +8,18 @@ public class MeetingConsoleReader
     private readonly ConsoleInputReader _inputReader;
     private readonly IMeetingService _meetingService;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly MeetingsPrintService _meetingsPrintService;
 
     public MeetingConsoleReader(
         ConsoleInputReader inputReader,
         IMeetingService meetingService,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        MeetingsPrintService meetingsPrintService)
     {
-        _inputReader      = inputReader;
-        _meetingService   = meetingService;
-        _dateTimeProvider = dateTimeProvider;
+        _inputReader          = inputReader;
+        _meetingService       = meetingService;
+        _dateTimeProvider     = dateTimeProvider;
+        _meetingsPrintService = meetingsPrintService;
     }
 
     public Meeting Read(Meeting defaultValue = default)
@@ -24,19 +27,18 @@ public class MeetingConsoleReader
         var m = defaultValue?.Clone() ?? new Meeting();
 
         m.Subject          = _inputReader.ReadStringUntilNonEmpty("Введите тему встречи", m.Subject);
+        m                  = RereadUntilValidDates(m);
         m.NotifyBeforeTime = _inputReader.ReadTimeSpanUntilValid("Введите время оповещения", m.NotifyBeforeTime);
-
-        m = RereadUntilValidDates(m);
 
         return m;
     }
 
     private Meeting RereadUntilValidDates(Meeting meeting)
     {
-        while (!Validate(meeting))
+        do
         {
             meeting = ReadMeetingDates(meeting);
-        }
+        } while (!Validate(meeting));
 
         return meeting;
     }
@@ -64,12 +66,8 @@ public class MeetingConsoleReader
 
         if (overlapMeetings.Any())
         {
-            var message = overlapMeetings
-                .Select(om => $"{om.Subject.TrimWithEllipsis(10),10}|{om.StartDateTime}|{om.EndDateTime}")
-                .JoinToString(Environment.NewLine);
-
             Console.WriteLine($"Есть встречи ({overlapMeetings.Count}), конфликутющие с вашей.");
-            Console.WriteLine(message);
+            _meetingsPrintService.PrintAsTable(overlapMeetings);
 
             return false;
         }
@@ -81,8 +79,11 @@ public class MeetingConsoleReader
     {
         var m = defaultValue?.Clone() ?? new Meeting();
 
-        m.StartDateTime = _inputReader.ReadDateTimeUntilValid("Введите дату и время начала встречи", m.StartDateTime);
-        m.EndDateTime   = _inputReader.ReadDateTimeUntilValid("Введите дату и время окончания встречи", m.EndDateTime);
+        m.StartDateTime = _inputReader.ReadDateTimeUntilValid("Введите дату и время начала встречи", m.StartDateTime)
+            .ToUniversalTime();
+
+        m.EndDateTime = _inputReader.ReadDateTimeUntilValid("Введите дату и время окончания встречи", m.EndDateTime)
+            .ToUniversalTime();
 
         return m;
     }

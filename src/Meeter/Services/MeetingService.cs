@@ -25,7 +25,7 @@ public class MeetingService : IMeetingService
     {
         return _meetingStore
             .GetAll()
-            .Where(m => !DateTimeRangeHelper.HasOverlap(m.StartDateTime, m.EndDateTime, startDateTime, endDateTime))
+            .Where(m => DateTimeRangeHelper.HasOverlap(m.StartDateTime, m.EndDateTime, startDateTime, endDateTime))
             .ToList();
     }
 }
