@@ -1,4 +1,4 @@
-﻿using Meeter.Models.Exports;
+﻿using Meeter.Models;
 
 namespace Meeter.Cli.Services.MeetingExports;
 

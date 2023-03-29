@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Meeter.Models.Exports;
+namespace Meeter.Models;
 
 public class MeeterExportData
 {
@@ -10,5 +10,4 @@ public class MeeterExportData
     public DateTime MeetingsByDateTime { get; set; }
 
     public List<Meeting> Items { get; set; }
-
 }

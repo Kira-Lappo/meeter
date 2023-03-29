@@ -1,6 +1,7 @@
 ﻿using Meeter.Cli.Services;
 using Meeter.Cli.Services.MeetingExports;
 using Meeter.Cli.Services.MeetingPrints;
+using Meeter.Cli.Services.NewMeetings;
 using Meeter.Services;
 using Meeter.Services.Stores;
 
@@ -16,6 +17,7 @@ public static class AppSetup
         var inputReader = new ConsoleInputReader();
         var meetingStore = new MeetingStoreProvider().Get();
         var meetingService = new MeetingService(meetingStore);
+        var meetingReader = new MeetingConsoleReader(inputReader, meetingService);
 
         var printService = new MeetingsPrintService(meetingService);
         var printActionService = new MeetingsPrintMenuActionService(inputReader, printService);
@@ -23,7 +25,9 @@ public static class AppSetup
         var meetingExportService = new MeetingJsonExportService();
         var exportActionService = new MeetingExportActionService(meetingExportService, inputReader, meetingService, dateTimeProvider);
 
-        app.Add("Добавить", "1", () => { Console.WriteLine("Not Implemented"); });
+        var newMeetingActionService = new NewMeetingActionService(meetingStore, meetingReader);
+
+        app.Add("Добавить", "1", newMeetingActionService.Execute);
         app.Add("Изменить", "2", () => { Console.WriteLine("Not Implemented"); });
         app.Add("Удалить",  "3", () => { Console.WriteLine("Not Implemented"); });
 

@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using Meeter.Models.Exports;
+using Meeter.Models;
 using Meeter.Services;
 
 namespace Meeter.Cli.Services.MeetingExports;

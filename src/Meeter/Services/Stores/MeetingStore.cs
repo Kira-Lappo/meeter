@@ -36,11 +36,19 @@ internal class MeetingStore : IMeetingStore
         return _meetings.FirstOrDefault(m => m.Id == id);
     }
 
-    public void Add(Meeting meeting)
+    public Meeting Add(Meeting meeting)
     {
         ArgumentNullException.ThrowIfNull(meeting);
 
-        _meetings.Add(meeting);
+        var newMeeting = meeting.Clone();
+        if (newMeeting.Id == Guid.Empty)
+        {
+            newMeeting.Id = Guid.NewGuid();
+        }
+
+        _meetings.Add(newMeeting);
+
+        return newMeeting;
     }
 
     public void Remove(Guid id)
@@ -62,16 +70,6 @@ internal class MeetingStore : IMeetingStore
             throw new InvalidOperationException($"Can't find meeting with id {meeting.Id}");
         }
 
-        Copy(meeting, storedMeeting);
-    }
-
-    private void Copy(Meeting from, Meeting to)
-    {
-        to.Id                   = from.Id;
-        to.Subject              = from.Subject;
-        to.StartDateTime        = from.StartDateTime;
-        to.EndDateTime          = from.EndDateTime;
-        to.HasBeenNotifiedAbout = from.HasBeenNotifiedAbout;
-        to.NotifyBeforeTime     = from.NotifyBeforeTime;
+        storedMeeting.CopyFrom(meeting);
     }
 }

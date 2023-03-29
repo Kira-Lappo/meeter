@@ -10,7 +10,7 @@ public interface IMeetingStore
 
     Meeting GetById(Guid id);
 
-    void Add(Meeting meeting);
+    Meeting Add(Meeting meeting);
 
     void Remove(Guid id);
 

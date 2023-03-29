@@ -85,8 +85,8 @@ internal class NotificationSender : INotificationSender
             .AddArgument("action",         "viewConversation")
             .AddArgument("conversationId", ConversationId)
             .AddText(meeting.Subject)
-            .AddText($"Meeting at {GetLocalTimeString(meeting.StartDateTime)}")
-            .AddText($"Until {GetLocalTimeString(meeting.EndDateTime)}")
+            .AddText($"Начало в {GetLocalTimeString(meeting.StartDateTime)}")
+            .AddText($"Окончание в {GetLocalTimeString(meeting.EndDateTime)}")
             .Show();
     }
 
@@ -102,7 +102,7 @@ internal class NotificationSender : INotificationSender
             _timer.Stop();
             _timer.Elapsed -= SendNotifications;
             _timer?.Dispose();
-            _timer = null;
+            _timer = default;
         }
     }
 }

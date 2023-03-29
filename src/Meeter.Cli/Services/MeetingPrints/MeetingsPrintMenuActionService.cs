@@ -13,9 +13,9 @@ public class MeetingsPrintMenuActionService : IMenuActionService
 
     public void Execute()
     {
-        _inputReader.ReadDateTimeAndExecute(dateTime =>
+        if (_inputReader.TryReadDateTime(out var dateTime, defaultValue: DateTime.UtcNow))
         {
-            _printService.PrintByDate(dateTime, Console.Out);
-        });
+            _printService.PrintByDate(dateTime);
+        }
     }
 }

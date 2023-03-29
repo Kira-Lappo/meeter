@@ -14,16 +14,11 @@ public class MeetingsPrintService
         InitColumnNames();
     }
 
-    public void PrintByDate(DateTime date, TextWriter textWriter)
+    public void PrintByDate(DateTime date)
     {
         var meetings = _meetingService.GetAllByStartDate(date);
 
         var table = new ConsoleTable(_columnNames);
-        table.Configure(o =>
-        {
-            o.OutputTo = textWriter;
-        });
-
         foreach (var m in meetings)
         {
             table.AddRow(

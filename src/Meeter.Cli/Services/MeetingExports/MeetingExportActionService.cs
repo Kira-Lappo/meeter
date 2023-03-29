@@ -1,4 +1,4 @@
-﻿using Meeter.Models.Exports;
+﻿using Meeter.Models;
 using Meeter.Services;
 
 namespace Meeter.Cli.Services.MeetingExports;
@@ -24,7 +24,10 @@ public class MeetingExportActionService : IMenuActionService
 
     public void Execute()
     {
-        _inputReader.ReadDateTimeAndExecute(Export);
+        if (_inputReader.TryReadDateTime(out var dateTime))
+        {
+            Export(dateTime);
+        }
     }
 
     private void Export(DateTime dateTime)
@@ -40,7 +43,7 @@ public class MeetingExportActionService : IMenuActionService
         };
 
         var targetFileName = CreateFileName(dateTime);
-        using (var stream = new FileStream(targetFileName, FileMode.CreateNew))
+        using (var stream = new FileStream(targetFileName, FileMode.Create))
         {
             _meetingExportService.Export(stream, exportModel);
         }

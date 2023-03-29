@@ -28,6 +28,4 @@ public class MeetingService : IMeetingService
             .Where(m => !DateTimeRangeHelper.HasOverlap(m.StartDateTime, m.EndDateTime, startDateTime, endDateTime))
             .ToList();
     }
-
-
 }
