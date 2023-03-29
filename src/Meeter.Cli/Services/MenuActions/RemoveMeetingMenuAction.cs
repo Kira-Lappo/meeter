@@ -1,13 +1,13 @@
 ﻿using Meeter.Services.Stores;
 
-namespace Meeter.Cli.Services.Menus;
+namespace Meeter.Cli.Services.MenuActions;
 
-public class MeetingDeleteMenuAction : IMenuAction
+public class RemoveMeetingMenuAction : IMenuAction
 {
     private readonly IMeetingStore _meetingStore;
     private readonly MeetingConsoleFinder _meetingConsoleFinder;
 
-    public MeetingDeleteMenuAction(
+    public RemoveMeetingMenuAction(
         IMeetingStore meetingStore,
         MeetingConsoleFinder meetingConsoleFinder)
     {

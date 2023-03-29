@@ -1,21 +1,10 @@
-﻿using Meeter.Cli.Services.Menus;
-
-namespace Meeter.Cli;
+﻿namespace Meeter.Cli;
 
 public class App
 {
     private readonly MainMenu _menu = new();
     private string _menuDisplayText;
     private bool _shouldRun;
-
-    public void Add(string title, string key, IMenuAction action)
-    {
-        ArgumentNullException.ThrowIfNull(title);
-        ArgumentNullException.ThrowIfNull(key);
-        ArgumentNullException.ThrowIfNull(action);
-
-        Add(title, key, action.Execute);
-    }
 
     public void Add(string title, string key, Action action)
     {

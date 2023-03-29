@@ -2,16 +2,16 @@
 using Meeter.Services;
 using Meeter.Services.Exports;
 
-namespace Meeter.Cli.Services.Menus;
+namespace Meeter.Cli.Services.MenuActions;
 
-public class MeetingExportMenuAction : IMenuAction
+public class ExportMeetingsMenuAction : IMenuAction
 {
     private readonly IMeetingExportService _meetingExportService;
     private readonly ConsoleInputReader _inputReader;
     private readonly IMeetingService _meetingService;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public MeetingExportMenuAction(
+    public ExportMeetingsMenuAction(
         IMeetingExportService meetingExportService,
         ConsoleInputReader inputReader,
         IMeetingService meetingService,

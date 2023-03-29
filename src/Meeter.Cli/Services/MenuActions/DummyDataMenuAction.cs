@@ -1,7 +1,7 @@
 ﻿using Meeter.Models;
 using Meeter.Services.Stores;
 
-namespace Meeter.Cli.Services.Menus;
+namespace Meeter.Cli.Services.MenuActions;
 
 public class DummyDataMenuAction : IMenuAction
 {

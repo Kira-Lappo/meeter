@@ -1,5 +1,5 @@
 ﻿using Meeter.Cli.Services;
-using Meeter.Cli.Services.Menus;
+using Meeter.Cli.Services.MenuActions;
 using Meeter.Services;
 using Meeter.Services.Exports;
 using Meeter.Services.Stores;
@@ -19,15 +19,15 @@ public static class AppSetup
         var printService = new MeetingsPrintService(meetingService);
         var meetingReader = new MeetingConsoleReader(inputReader, meetingService, dateTimeProvider, printService);
 
-        var printActionService = new MeetingsPrintMenuAction(inputReader, printService);
+        var printActionService = new PrintMeetingsMenuAction(inputReader, printService);
         var meetingConsoleFinder = new MeetingConsoleFinder(inputReader, meetingStore, printService, dateTimeProvider);
 
         var meetingExportService = new MeetingJsonExportService();
-        var exportActionService = new MeetingExportMenuAction(meetingExportService, inputReader, meetingService, dateTimeProvider);
+        var exportActionService = new ExportMeetingsMenuAction(meetingExportService, inputReader, meetingService, dateTimeProvider);
 
-        var newMeetingActionService = new NewMeetingMenuAction(meetingStore, meetingReader);
+        var newMeetingActionService = new CreateMeetingMenuAction(meetingStore, meetingReader);
 
-        var deleteMeetingActionService = new MeetingDeleteMenuAction(meetingStore, meetingConsoleFinder);
+        var deleteMeetingActionService = new RemoveMeetingMenuAction(meetingStore, meetingConsoleFinder);
 
         var editMeetingMenuAction = new EditMeetingMenuAction(meetingStore, meetingConsoleFinder, meetingReader);
 
