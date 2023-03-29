@@ -4,14 +4,14 @@ using Meeter.Services.Stores;
 
 namespace Meeter.Cli.Services.Menus.MeetingRemovals;
 
-public class MeetingDeleteMenuActionService : IMenuActionService
+public class MeetingDeleteMenuAction : IMenuAction
 {
     private readonly ConsoleInputReader _consoleInputReader;
     private readonly IMeetingStore _meetingStore;
     private readonly MeetingsPrintService _meetingsPrintService;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public MeetingDeleteMenuActionService(
+    public MeetingDeleteMenuAction(
         ConsoleInputReader consoleInputReader,
         IMeetingStore meetingStore,
         MeetingsPrintService meetingsPrintService,

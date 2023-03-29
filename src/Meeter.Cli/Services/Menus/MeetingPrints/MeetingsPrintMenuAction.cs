@@ -1,11 +1,11 @@
 ﻿namespace Meeter.Cli.Services.Menus.MeetingPrints;
 
-public class MeetingsPrintMenuActionService : IMenuActionService
+public class MeetingsPrintMenuAction : IMenuAction
 {
     private readonly ConsoleInputReader _inputReader;
     private readonly MeetingsPrintService _printService;
 
-    public MeetingsPrintMenuActionService(ConsoleInputReader inputReader, MeetingsPrintService printService)
+    public MeetingsPrintMenuAction(ConsoleInputReader inputReader, MeetingsPrintService printService)
     {
         _inputReader  = inputReader;
         _printService = printService;

@@ -21,14 +21,14 @@ public static class AppSetup
         var printService = new MeetingsPrintService(meetingService);
         var meetingReader = new MeetingConsoleReader(inputReader, meetingService, dateTimeProvider, printService);
 
-        var printActionService = new MeetingsPrintMenuActionService(inputReader, printService);
+        var printActionService = new MeetingsPrintMenuAction(inputReader, printService);
 
         var meetingExportService = new MeetingJsonExportService();
-        var exportActionService = new MeetingExportMenuActionService(meetingExportService, inputReader, meetingService, dateTimeProvider);
+        var exportActionService = new MeetingExportMenuAction(meetingExportService, inputReader, meetingService, dateTimeProvider);
 
-        var newMeetingActionService = new NewMeetingMenuActionService(meetingStore, meetingReader);
+        var newMeetingActionService = new NewMeetingMenuAction(meetingStore, meetingReader);
 
-        var deleteMeetingActionService = new MeetingDeleteMenuActionService(inputReader, meetingStore, printService, dateTimeProvider);
+        var deleteMeetingActionService = new MeetingDeleteMenuAction(inputReader, meetingStore, printService, dateTimeProvider);
 
         app.Add("Добавить", "1", newMeetingActionService);
         app.Add("Изменить", "2", () => { Console.WriteLine("Not Implemented"); });

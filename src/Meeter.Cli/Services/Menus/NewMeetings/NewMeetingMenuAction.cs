@@ -2,12 +2,12 @@
 
 namespace Meeter.Cli.Services.Menus.NewMeetings;
 
-public class NewMeetingMenuActionService : IMenuActionService
+public class NewMeetingMenuAction : IMenuAction
 {
     private readonly IMeetingStore _meetingStore;
     private readonly MeetingConsoleReader _meetingConsoleReader;
 
-    public NewMeetingMenuActionService(
+    public NewMeetingMenuAction(
         IMeetingStore meetingStore,
         MeetingConsoleReader meetingConsoleReader)
     {

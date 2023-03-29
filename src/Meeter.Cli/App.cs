@@ -9,13 +9,13 @@ public class App
     private string _menuDisplayText;
     private bool _shouldRun;
 
-    public void Add(string title, string key, IMenuActionService actionService)
+    public void Add(string title, string key, IMenuAction action)
     {
         ArgumentNullException.ThrowIfNull(title);
         ArgumentNullException.ThrowIfNull(key);
-        ArgumentNullException.ThrowIfNull(actionService);
+        ArgumentNullException.ThrowIfNull(action);
 
-        Add(title, key, actionService.Execute);
+        Add(title, key, action.Execute);
     }
 
     public void Add(string title, string key, Action action)

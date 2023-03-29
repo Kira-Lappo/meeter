@@ -3,14 +3,14 @@ using Meeter.Services;
 
 namespace Meeter.Cli.Services.Menus.MeetingExports;
 
-public class MeetingExportMenuActionService : IMenuActionService
+public class MeetingExportMenuAction : IMenuAction
 {
     private readonly IMeetingExportService _meetingExportService;
     private readonly ConsoleInputReader _inputReader;
     private readonly IMeetingService _meetingService;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public MeetingExportMenuActionService(
+    public MeetingExportMenuAction(
         IMeetingExportService meetingExportService,
         ConsoleInputReader inputReader,
         IMeetingService meetingService,
