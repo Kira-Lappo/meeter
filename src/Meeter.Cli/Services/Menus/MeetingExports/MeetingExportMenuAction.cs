@@ -24,7 +24,8 @@ public class MeetingExportMenuAction : IMenuAction
 
     public void Execute()
     {
-        if (_inputReader.TryReadDateTime(out var dateTime))
+        var now = _dateTimeProvider.UtcNow;
+        if (_inputReader.TryReadDateTime(out var dateTime, defaultValue: now))
         {
             Export(dateTime);
         }
