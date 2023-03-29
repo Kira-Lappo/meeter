@@ -1,15 +1,14 @@
-﻿namespace Meeter.Cli.Menu;
+﻿namespace Meeter.Cli;
 
 public class App
 {
+    private readonly MainMenu _menu = new();
     private string _menuDisplayText;
     private bool _shouldRun;
 
-    private MainMenu Menu { get; } = new();
-
     public void Add(string title, string key, Action action)
     {
-        Menu.Add(new MenuItem(title, key, action));
+        _menu.Add(new MenuItem(title, key, action));
     }
 
     public void Run()
@@ -19,9 +18,10 @@ public class App
         _shouldRun = true;
         while (_shouldRun)
         {
-            DisplayMenu();
+            PrintMenu();
             var choice = ReadChoice();
             Execute(choice);
+            PrintSeparator();
         }
     }
 
@@ -30,16 +30,11 @@ public class App
         _shouldRun = false;
     }
 
-    private void Init()
-    {
-        _menuDisplayText = Menu.GetDisplayText();
-    }
-
     private void Execute(string choice)
     {
         try
         {
-            var isHandled = Menu.Handle(choice);
+            var isHandled = _menu.Handle(choice);
             if (!isHandled)
             {
                 Console.WriteLine("Нет такого пункта в меню.");
@@ -49,8 +44,6 @@ public class App
         {
             Console.Error.WriteLine($"Ошибка: {e}");
         }
-
-        Console.WriteLine(new string('-', Console.BufferWidth));
     }
 
     private string ReadChoice()
@@ -58,8 +51,18 @@ public class App
         return Console.ReadLine();
     }
 
-    private void DisplayMenu()
+    private void PrintMenu()
     {
         Console.WriteLine(_menuDisplayText);
+    }
+
+    private static void PrintSeparator()
+    {
+        Console.WriteLine(new string('-', Console.BufferWidth));
+    }
+
+    private void Init()
+    {
+        _menuDisplayText = _menu.GetDisplayText();
     }
 }

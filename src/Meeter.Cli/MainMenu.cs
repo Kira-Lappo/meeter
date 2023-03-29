@@ -1,4 +1,4 @@
-﻿namespace Meeter.Cli.Menu;
+﻿namespace Meeter.Cli;
 
 public class MainMenu
 {

@@ -1,5 +1,4 @@
 ﻿using Meeter.Cli;
-using Meeter.Cli.Menu;
 using Meeter.Services.Notifications;
 
 using var notificationSender = new NotificationSenderFactory()
