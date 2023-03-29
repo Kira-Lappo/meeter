@@ -1,8 +1,7 @@
 ﻿using System.Text.Json;
 using Meeter.Models;
-using Meeter.Services;
 
-namespace Meeter.Cli.Services.MeetingExports;
+namespace Meeter.Cli.Services.Menus.MeetingExports;
 
 public class MeetingJsonExportService : IMeetingExportService
 {

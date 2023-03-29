@@ -1,13 +1,13 @@
 ﻿using Meeter.Services.Stores;
 
-namespace Meeter.Cli.Services.NewMeetings;
+namespace Meeter.Cli.Services.Menus.NewMeetings;
 
-public class NewMeetingActionService : IMenuActionService
+public class NewMeetingMenuActionService : IMenuActionService
 {
     private readonly IMeetingStore _meetingStore;
     private readonly MeetingConsoleReader _meetingConsoleReader;
 
-    public NewMeetingActionService(
+    public NewMeetingMenuActionService(
         IMeetingStore meetingStore,
         MeetingConsoleReader meetingConsoleReader)
     {

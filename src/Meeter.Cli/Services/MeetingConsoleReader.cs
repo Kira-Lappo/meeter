@@ -1,6 +1,5 @@
 ﻿using Meeter.Models;
 using Meeter.Services;
-using TimeSpan = ABI.System.TimeSpan;
 
 namespace Meeter.Cli.Services;
 
@@ -8,13 +7,16 @@ public class MeetingConsoleReader
 {
     private readonly ConsoleInputReader _inputReader;
     private readonly IMeetingService _meetingService;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
     public MeetingConsoleReader(
         ConsoleInputReader inputReader,
-        IMeetingService meetingService)
+        IMeetingService meetingService,
+        IDateTimeProvider dateTimeProvider)
     {
-        _inputReader    = inputReader;
-        _meetingService = meetingService;
+        _inputReader      = inputReader;
+        _meetingService   = meetingService;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public Meeting Read(Meeting defaultValue = default)
@@ -31,38 +33,48 @@ public class MeetingConsoleReader
 
     private Meeting RereadUntilValidDates(Meeting meeting)
     {
-        while (true)
+        while (!Validate(meeting))
         {
-            if (meeting.EndDateTime <= meeting.StartDateTime)
-            {
-                Console.WriteLine("Дата и время окончания должна быть позже, чем начало.");
-                meeting = ReadMeetingDates(meeting);
-
-                continue;
-            }
-
-            var overlapMeetings = _meetingService
-                .FindOverlappingMeetings(meeting.StartDateTime, meeting.EndDateTime)
-                .ToList();
-
-            if (!overlapMeetings.Any())
-            {
-                var message = overlapMeetings
-                    .Select(om => $"{om.Subject.TrimWithEllipsis(10),10}|{om.StartDateTime}|{om.EndDateTime}")
-                    .JoinToString(Environment.NewLine);
-
-                Console.WriteLine($"Есть встречи ({overlapMeetings.Count}), конфликутющих с вашей.");
-                Console.WriteLine(message);
-
-                meeting = ReadMeetingDates(meeting);
-
-                continue;
-            }
-
-            break;
+            meeting = ReadMeetingDates(meeting);
         }
 
         return meeting;
+    }
+
+    private bool Validate(Meeting meeting)
+    {
+        var now = _dateTimeProvider.UtcNow;
+        if (meeting.StartDateTime <= now || meeting.EndDateTime <= now)
+        {
+            Console.WriteLine("Дата и время начала и окончания должны быть в будущем периоде.");
+
+            return false;
+        }
+
+        if (meeting.EndDateTime <= meeting.StartDateTime)
+        {
+            Console.WriteLine("Дата и время окончания должна быть позже, чем начало.");
+
+            return false;
+        }
+
+        var overlapMeetings = _meetingService
+            .FindOverlappingMeetings(meeting.StartDateTime, meeting.EndDateTime)
+            .ToList();
+
+        if (overlapMeetings.Any())
+        {
+            var message = overlapMeetings
+                .Select(om => $"{om.Subject.TrimWithEllipsis(10),10}|{om.StartDateTime}|{om.EndDateTime}")
+                .JoinToString(Environment.NewLine);
+
+            Console.WriteLine($"Есть встречи ({overlapMeetings.Count}), конфликутющие с вашей.");
+            Console.WriteLine(message);
+
+            return false;
+        }
+
+        return true;
     }
 
     private Meeting ReadMeetingDates(Meeting defaultValue = default)

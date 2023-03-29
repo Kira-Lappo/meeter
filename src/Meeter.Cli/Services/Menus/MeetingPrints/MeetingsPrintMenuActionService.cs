@@ -1,4 +1,4 @@
-﻿namespace Meeter.Cli.Services.MeetingPrints;
+﻿namespace Meeter.Cli.Services.Menus.MeetingPrints;
 
 public class MeetingsPrintMenuActionService : IMenuActionService
 {

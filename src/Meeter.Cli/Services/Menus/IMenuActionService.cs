@@ -1,4 +1,4 @@
-﻿namespace Meeter.Cli.Services;
+﻿namespace Meeter.Cli.Services.Menus;
 
 public interface IMenuActionService
 {

@@ -1,7 +1,9 @@
 ﻿using Meeter.Cli.Services;
-using Meeter.Cli.Services.MeetingExports;
-using Meeter.Cli.Services.MeetingPrints;
-using Meeter.Cli.Services.NewMeetings;
+using Meeter.Cli.Services.Menus;
+using Meeter.Cli.Services.Menus.MeetingExports;
+using Meeter.Cli.Services.Menus.MeetingPrints;
+using Meeter.Cli.Services.Menus.MeetingRemovals;
+using Meeter.Cli.Services.Menus.NewMeetings;
 using Meeter.Services;
 using Meeter.Services.Stores;
 
@@ -17,23 +19,25 @@ public static class AppSetup
         var inputReader = new ConsoleInputReader();
         var meetingStore = new MeetingStoreProvider().Get();
         var meetingService = new MeetingService(meetingStore);
-        var meetingReader = new MeetingConsoleReader(inputReader, meetingService);
+        var meetingReader = new MeetingConsoleReader(inputReader, meetingService, dateTimeProvider);
 
         var printService = new MeetingsPrintService(meetingService);
         var printActionService = new MeetingsPrintMenuActionService(inputReader, printService);
 
         var meetingExportService = new MeetingJsonExportService();
-        var exportActionService = new MeetingExportActionService(meetingExportService, inputReader, meetingService, dateTimeProvider);
+        var exportActionService = new MeetingExportMenuActionService(meetingExportService, inputReader, meetingService, dateTimeProvider);
 
-        var newMeetingActionService = new NewMeetingActionService(meetingStore, meetingReader);
+        var newMeetingActionService = new NewMeetingMenuActionService(meetingStore, meetingReader);
 
-        app.Add("Добавить", "1", newMeetingActionService.Execute);
+        var deleteMeetingActionService = new MeetingDeleteMenuActionService(inputReader, meetingStore, printService);
+
+        app.Add("Добавить", "1", newMeetingActionService);
         app.Add("Изменить", "2", () => { Console.WriteLine("Not Implemented"); });
-        app.Add("Удалить",  "3", () => { Console.WriteLine("Not Implemented"); });
+        app.Add("Удалить",  "3", deleteMeetingActionService);
 
-        app.Add("Встречи по дате", "4", printActionService.Execute);
+        app.Add("Встречи по дате", "4", printActionService);
 
-        app.Add("Экспорт", "9", exportActionService.Execute);
+        app.Add("Экспорт", "9", exportActionService);
 
         app.Add("Выход", "0", app.RequestStop);
     }

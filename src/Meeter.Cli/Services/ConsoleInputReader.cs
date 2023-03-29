@@ -72,6 +72,23 @@ public class ConsoleInputReader
         return false;
     }
 
+    public bool TryReadInt(out int value, string prompt = default, int? defaultValue = default)
+    {
+        prompt = CreatePrompt(prompt, defaultValue, "Введите число");
+        Console.WriteLine(prompt);
+
+        var input = Console.ReadLine();
+
+        if (int.TryParse(input, out value))
+        {
+            return true;
+        }
+
+        Console.WriteLine("Введите корректное число");
+
+        return false;
+    }
+
     public string ReadStringUntilNonEmpty(string prompt = default, string defaultValue = default)
     {
         string value;

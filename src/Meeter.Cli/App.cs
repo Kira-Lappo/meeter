@@ -1,4 +1,7 @@
-﻿namespace Meeter.Cli;
+﻿using Meeter.Cli.Services;
+using Meeter.Cli.Services.Menus;
+
+namespace Meeter.Cli;
 
 public class App
 {
@@ -6,8 +9,21 @@ public class App
     private string _menuDisplayText;
     private bool _shouldRun;
 
+    public void Add(string title, string key, IMenuActionService actionService)
+    {
+        ArgumentNullException.ThrowIfNull(title);
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(actionService);
+
+        Add(title, key, actionService.Execute);
+    }
+
     public void Add(string title, string key, Action action)
     {
+        ArgumentNullException.ThrowIfNull(title);
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(action);
+
         _menu.Add(new MenuItem(title, key, action));
     }
 
