@@ -62,6 +62,7 @@ public class MeetingConsoleReader
 
         var overlapMeetings = _meetingService
             .FindOverlappingMeetings(meeting.StartDateTime, meeting.EndDateTime)
+            .Where(m => m.Id != meeting.Id)
             .ToList();
 
         if (overlapMeetings.Any())
