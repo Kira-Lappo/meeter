@@ -1,5 +1,4 @@
-﻿using Meeter.Cli.Services;
-using Meeter.Cli.Services.Menus;
+﻿using Meeter.Cli.Services.Menus;
 
 namespace Meeter.Cli;
 

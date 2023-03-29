@@ -6,56 +6,26 @@ namespace Meeter.Cli.Services.Menus.MeetingRemovals;
 
 public class MeetingDeleteMenuAction : IMenuAction
 {
-    private readonly ConsoleInputReader _consoleInputReader;
     private readonly IMeetingStore _meetingStore;
-    private readonly MeetingsPrintService _meetingsPrintService;
-    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly MeetingConsoleFinder _meetingConsoleFinder;
 
     public MeetingDeleteMenuAction(
-        ConsoleInputReader consoleInputReader,
         IMeetingStore meetingStore,
-        MeetingsPrintService meetingsPrintService,
-        IDateTimeProvider dateTimeProvider)
+        MeetingConsoleFinder meetingConsoleFinder)
     {
-        _consoleInputReader    = consoleInputReader;
-        _meetingStore          = meetingStore;
-        _meetingsPrintService  = meetingsPrintService;
-        _dateTimeProvider = dateTimeProvider;
+        _meetingStore         = meetingStore;
+        _meetingConsoleFinder = meetingConsoleFinder;
     }
 
     public void Execute()
     {
-        var defaultDate = _dateTimeProvider.UtcNow;
-        if (!_consoleInputReader.TryReadDateTime(out var date, "Введите дату", defaultDate))
+        var meeting = _meetingConsoleFinder.Find();
+        if (meeting == default)
         {
             return;
         }
 
-        var meetings = _meetingStore.GetAll()
-            .Where(m => m.StartDateTime.Date == date.Date)
-            .ToList();
-
-        if (meetings.Count <= 0)
-        {
-            Console.WriteLine("Нет встреч на введенную дату");
-            return;
-        }
-
-        _meetingsPrintService.PrintAsTable(meetings, showRowNumbers:true);
-
-        if (!_consoleInputReader.TryReadInt(out var index, "Введите номер встречи"))
-        {
-            return;
-        }
-
-        if (index < 0 || index >= meetings.Count)
-        {
-            Console.WriteLine($"Неверный номер. Номер должнен быть в пределах от 0 до {meetings.Count - 1}");
-            return;
-        }
-
-        var meetingToDelete = meetings.ElementAt(index);
-        _meetingStore.Remove(meetingToDelete.Id);
+        _meetingStore.Remove(meeting.Id);
 
         Console.WriteLine("Встреча удалена");
     }

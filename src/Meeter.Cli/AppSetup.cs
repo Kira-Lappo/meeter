@@ -1,4 +1,5 @@
 ﻿using Meeter.Cli.Services;
+using Meeter.Cli.Services.Menus.MeetingEdits;
 using Meeter.Cli.Services.Menus.MeetingExports;
 using Meeter.Cli.Services.Menus.MeetingPrints;
 using Meeter.Cli.Services.Menus.MeetingRemovals;
@@ -22,16 +23,19 @@ public static class AppSetup
         var meetingReader = new MeetingConsoleReader(inputReader, meetingService, dateTimeProvider, printService);
 
         var printActionService = new MeetingsPrintMenuAction(inputReader, printService);
+        var meetingConsoleFinder = new MeetingConsoleFinder(inputReader, meetingStore, printService, dateTimeProvider);
 
         var meetingExportService = new MeetingJsonExportService();
         var exportActionService = new MeetingExportMenuAction(meetingExportService, inputReader, meetingService, dateTimeProvider);
 
         var newMeetingActionService = new NewMeetingMenuAction(meetingStore, meetingReader);
 
-        var deleteMeetingActionService = new MeetingDeleteMenuAction(inputReader, meetingStore, printService, dateTimeProvider);
+        var deleteMeetingActionService = new MeetingDeleteMenuAction(meetingStore, meetingConsoleFinder);
+
+        var editMeetingMenuAction = new EditMeetingMenuAction(meetingStore, meetingConsoleFinder, meetingReader);
 
         app.Add("Добавить", "1", newMeetingActionService);
-        app.Add("Изменить", "2", () => { Console.WriteLine("Not Implemented"); });
+        app.Add("Изменить", "2", editMeetingMenuAction);
         app.Add("Удалить",  "3", deleteMeetingActionService);
 
         app.Add("Встречи по дате", "4", printActionService);
