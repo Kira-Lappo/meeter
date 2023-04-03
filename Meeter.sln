@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9DD537E6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meeter.Tests", "tests\Meeter.Tests\Meeter.Tests.csproj", "{B511BA0A-F75F-4A2D-A107-56843CB01100}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meeter.TerminalGui", "src\Meeter.TerminalGui\Meeter.TerminalGui.csproj", "{B39D1CC9-D6F4-4720-8009-93BF8CF550BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{B511BA0A-F75F-4A2D-A107-56843CB01100}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B511BA0A-F75F-4A2D-A107-56843CB01100}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B511BA0A-F75F-4A2D-A107-56843CB01100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B39D1CC9-D6F4-4720-8009-93BF8CF550BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B39D1CC9-D6F4-4720-8009-93BF8CF550BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B39D1CC9-D6F4-4720-8009-93BF8CF550BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B39D1CC9-D6F4-4720-8009-93BF8CF550BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B511BA0A-F75F-4A2D-A107-56843CB01100} = {9DD537E6-3EFC-4A77-8781-A319D95E6C66}
