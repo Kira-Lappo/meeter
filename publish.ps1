@@ -10,10 +10,10 @@ dotnet publish "$PSScriptRoot/src/Meeter.Cli" `
     -c Release  `
     -p:PublishProfile="publish.pubxml"  `
     -p:RuntimeIdentifier="$RID"  `
-    -o "$PSScriptRoot/out/$RID"
+    -o "$PSScriptRoot/out/cli/$RID"
 
 dotnet publish "$PSScriptRoot/src/Meeter.TerminalGui" `
     -c Release  `
     -p:PublishProfile="publish.pubxml"  `
     -p:RuntimeIdentifier="$RID"  `
-    -o "$PSScriptRoot/out/$RID"
+    -o "$PSScriptRoot/out/tgui/$RID"
