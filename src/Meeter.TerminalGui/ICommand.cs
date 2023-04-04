@@ -5,11 +5,11 @@ public interface ICommand
     void Execute();
 }
 
-class Command : ICommand
+class ActionCommand : ICommand
 {
     private readonly Action _action;
 
-    public Command(Action action)
+    public ActionCommand(Action action)
     {
         _action = action;
     }

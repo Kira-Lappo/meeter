@@ -1,40 +1,41 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 using Terminal.Gui;
 
 namespace Meeter.TerminalGui;
 
 public class ViewModelBinder
 {
-    private static readonly Dictionary<View, Dictionary<string, Action<object>>> ViewBinds = new ();
+    private static readonly Dictionary<Type, Dictionary<string, Action<View, object>>> ViewBinds = new();
 
     public static IDisposable Bind(View view, IViewModel viewModel)
     {
-        viewModel.PropertyChanged += OnViewModelOnPropertyChanged;
-
-        if (!ViewBinds.ContainsKey(view))
+        var viewType = view.GetType();
+        if (!ViewBinds.ContainsKey(viewType))
         {
-            ViewBinds[view] = view.GetPropertyChangeHandlers();
+            ViewBinds[viewType] = GetPropertyChangedHandlers(viewType);
         }
 
-        return new BindDisposable(() =>
+        viewModel.PropertyChanged += OnViewModelOnPropertyChanged;
+        return new DisposeAction(() =>
         {
             viewModel.PropertyChanged -= OnViewModelOnPropertyChanged;
         });
 
         void OnViewModelOnPropertyChanged(object o, PropertyChangedEventArgs args)
         {
-            OnViewModelPropertyChanged(view, o, args);
+            HandlePropertyChanged(view, o, args);
         }
     }
 
-    private static void OnViewModelPropertyChanged(View view, object sender, PropertyChangedEventArgs e)
+    private static void HandlePropertyChanged(View view, object sender, PropertyChangedEventArgs e)
     {
         if (sender is not IViewModel viewModel)
         {
             return;
         }
 
-        if (!ViewBinds.TryGetValue(view, out var handlers))
+        if (!ViewBinds.TryGetValue(view.GetType(), out var handlers))
         {
             return;
         }
@@ -48,15 +49,25 @@ public class ViewModelBinder
         if (handlers.TryGetValue(name, out var handler))
         {
             var newValue = viewModel[name];
-            handler.Invoke(newValue);
+            handler.Invoke(view, newValue);
         }
     }
 
-    private class BindDisposable : IDisposable
+    private static Dictionary<string, Action<View, object>> GetPropertyChangedHandlers(Type viewType)
+    {
+        return viewType
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+            .Where(m => m.GetCustomAttributes<OnViewModelPropertyChangedAttribute>().Any())
+            .ToDictionary<MethodInfo, string, Action<View, object>>(
+                m => m.GetCustomAttribute<OnViewModelPropertyChangedAttribute>().PropertyName,
+                m => (view, newValue) => m.Invoke(view, new[] { newValue }));
+    }
+
+    private class DisposeAction : IDisposable
     {
         private readonly Action _dispose;
 
-        public BindDisposable(Action dispose)
+        public DisposeAction(Action dispose)
         {
             _dispose = dispose;
         }

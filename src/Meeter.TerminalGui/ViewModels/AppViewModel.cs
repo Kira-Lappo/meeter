@@ -1,29 +1,25 @@
 ﻿using Meeter.Models;
 using Meeter.Services;
-using Meeter.Services.Stores;
 using Terminal.Gui;
 
 namespace Meeter.TerminalGui.ViewModels;
 
 public class AppViewModel : ViewModel
 {
-    private readonly IMeetingStore _meetingStore;
     private readonly IMeetingService _meetingService;
     private readonly DummyDataGenerationService _dummyDataGenerationService;
     private List<Meeting> _meetings;
     private DateTime _selectedPeriodDateTime = DateTime.Today;
 
-    public AppViewModel(IMeetingStore meetingStore,
-        DummyDataGenerationService dummyDataGenerationService,
+    public AppViewModel(DummyDataGenerationService dummyDataGenerationService,
         IMeetingService meetingService)
     {
-        _meetingStore               = meetingStore;
         _dummyDataGenerationService = dummyDataGenerationService;
-        _meetingService        = meetingService;
+        _meetingService             = meetingService;
 
-        ReloadMeetingsCommand    = new Command(ReloadMeetings);
-        GenerateDummyDataCommand = new Command(GenerateDummyData);
-        ExitCommand = new Command(Exit);
+        ReloadMeetingsCommand    = new ActionCommand(ReloadMeetings);
+        GenerateDummyDataCommand = new ActionCommand(GenerateDummyData);
+        ExitCommand              = new ActionCommand(Exit);
     }
 
     public List<Meeting> Meetings

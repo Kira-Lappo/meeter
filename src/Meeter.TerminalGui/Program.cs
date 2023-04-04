@@ -11,7 +11,7 @@ try
     var store = new MeetingStoreProvider().Get();
     var meetingService = new MeetingService(store);
     var dgs = new DummyDataGenerationService(store);
-    var viewModel = new AppViewModel(store, dgs, meetingService);
+    var viewModel = new AppViewModel(dgs, meetingService);
 
     var rootView = new Toplevel();
     var mainView = new MainWindow(viewModel);
