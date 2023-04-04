@@ -11,3 +11,9 @@ dotnet publish "$PSScriptRoot/src/Meeter.Cli" `
     -p:PublishProfile="publish.pubxml"  `
     -p:RuntimeIdentifier="$RID"  `
     -o "$PSScriptRoot/out/$RID"
+
+dotnet publish "$PSScriptRoot/src/Meeter.TerminalGui" `
+    -c Release  `
+    -p:PublishProfile="publish.pubxml"  `
+    -p:RuntimeIdentifier="$RID"  `
+    -o "$PSScriptRoot/out/$RID"
