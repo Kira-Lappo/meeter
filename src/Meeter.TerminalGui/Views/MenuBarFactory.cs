@@ -1,6 +1,4 @@
-﻿using Meeter.Services;
-using Meeter.Services.Stores;
-using Meeter.TerminalGui.ViewModels;
+﻿using Meeter.TerminalGui.ViewModels;
 using Terminal.Gui;
 
 namespace Meeter.TerminalGui.Views;
@@ -9,16 +7,17 @@ public class MenuBarFactory
 {
     public MenuBar Create(AppViewModel vm)
     {
-        var reloadMenuItem = new MenuItem("_Перезагрузить",   default, vm.ReloadMeetingsCommand.Execute);
-        var addMenuItem = new MenuItem("_Добавить",           default, NotImplemented);
-        var generateMenuItem = new MenuItem("С_генерировать", default, vm.GenerateDummyDataCommand.Execute);
+        var reloadMenuItem = new MenuItem("Re_load",               default, vm.ReloadMeetingsCommand.Execute);
+        var addMenuItem = new MenuItem("_New",                     default, NotImplemented);
+        var generateMenuItem = new MenuItem("_Generate test data", default, vm.GenerateDummyDataCommand.Execute);
 
-        var meetingsMenuBarItem = new MenuBarItem("_Встречи",
-            new[] { reloadMenuItem, addMenuItem, new("===", string.Empty, null), generateMenuItem, });
+        var meetingsMenuBarItem = new MenuBarItem("_Meetings",
+            new[] { reloadMenuItem, addMenuItem, generateMenuItem, });
 
-        var exitMenuBarItem = new MenuBarItem("_Выход", default, vm.ExitCommand.Execute);
+        var exitMenuBarItem = new MenuItem("_Exit", default, vm.ExitCommand.Execute);
+        var fileBarItem = new MenuBarItem("_App", new[] { exitMenuBarItem, });
 
-        var menu = new MenuBar(new[] { meetingsMenuBarItem, exitMenuBarItem, });
+        var menu = new MenuBar(new[] { fileBarItem, meetingsMenuBarItem, });
 
         return menu;
     }

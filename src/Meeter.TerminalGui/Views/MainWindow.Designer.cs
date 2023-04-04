@@ -7,32 +7,23 @@ public partial class MainWindow : Window
 {
     private TableView _meetingsTable;
     private DataTable _meetingTableData;
-    private LineView _selectedDayLabel;
 
     private void InitializeComponent()
     {
-        Width                  = Dim.Fill();
-        Height                 = Dim.Fill();
-        X                      = 0;
-        Y                      = 0;
-        Modal                  = false;
-        Border.BorderStyle     = BorderStyle.None;
-        TextAlignment          = TextAlignment.Left;
-
-        _selectedDayLabel = new LineView(){
-            X      = 0,
-            Y      = 0,
-            Width  = Dim.Fill(),
-            Height = 1,
-        };
-
-        Add(_selectedDayLabel);
+        Width              = Dim.Fill();
+        Height             = Dim.Fill();
+        X                  = 0;
+        Y                  = 0;
+        Modal              = false;
+        Border.BorderStyle = BorderStyle.Single;
+        TextAlignment      = TextAlignment.Left;
+        ColorScheme        = Colors.ColorSchemes["Dialog"];
 
         _meetingsTable = new TableView () {
-            X      = 0,
-            Y      = 0,
-            Width  = Dim.Fill(),
-            Height = Dim.Fill(),
+            X           = 0,
+            Y           = 0,
+            Width       = Dim.Fill(),
+            Height      = Dim.Fill(),
         };
 
         _meetingTableData = new DataTable();

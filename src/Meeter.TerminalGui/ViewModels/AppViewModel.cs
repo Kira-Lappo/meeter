@@ -1,39 +1,29 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Meeter.Models;
+﻿using Meeter.Models;
 using Meeter.Services;
 using Meeter.Services.Stores;
 using Terminal.Gui;
 
 namespace Meeter.TerminalGui.ViewModels;
 
-public class AppViewModel : IViewModel
+public class AppViewModel : ViewModel
 {
     private readonly IMeetingStore _meetingStore;
+    private readonly IMeetingService _meetingService;
     private readonly DummyDataGenerationService _dummyDataGenerationService;
     private List<Meeting> _meetings;
     private DateTime _selectedPeriodDateTime = DateTime.Today;
 
-    private readonly Dictionary<string, Func<object>> _properties;
-
     public AppViewModel(IMeetingStore meetingStore,
-        DummyDataGenerationService dummyDataGenerationService)
+        DummyDataGenerationService dummyDataGenerationService,
+        IMeetingService meetingService)
     {
         _meetingStore               = meetingStore;
         _dummyDataGenerationService = dummyDataGenerationService;
+        _meetingService        = meetingService;
 
         ReloadMeetingsCommand    = new Command(ReloadMeetings);
         GenerateDummyDataCommand = new Command(GenerateDummyData);
         ExitCommand = new Command(Exit);
-
-        _properties = new()
-        {
-            {nameof(Meetings), () => Meetings},
-            {nameof(SelectedPeriodDateTime), () => SelectedPeriodDateTime},
-            {nameof(ReloadMeetingsCommand), () => ReloadMeetingsCommand},
-            {nameof(GenerateDummyDataCommand), () => GenerateDummyDataCommand},
-            {nameof(ExitCommand), () => ExitCommand},
-        };
     }
 
     public List<Meeting> Meetings
@@ -68,7 +58,7 @@ public class AppViewModel : IViewModel
 
     private void ReloadMeetings()
     {
-        Meetings = _meetingStore.GetAll().ToList();
+        Meetings = _meetingService.GetAllByStartDate(SelectedPeriodDateTime).ToList();
     }
 
     private void GenerateDummyData()
@@ -81,43 +71,4 @@ public class AppViewModel : IViewModel
     {
         Application.RequestStop();
     }
-
-    #region INotifyPropertyChanged
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value))
-            return false;
-
-        field = value;
-        OnPropertyChanged(propertyName);
-
-        return true;
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    #endregion INotifyPropertyChanged
-
-    #region IPropertyBag
-
-    public object this[string name]
-    {
-        get
-        {
-            if (_properties.TryGetValue(name, out var getValue))
-            {
-                return getValue();
-            }
-
-            return default;
-        }
-    }
-
-    #endregion IPropertyBag
 }

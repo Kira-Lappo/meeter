@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Data;
+using System.Reflection;
 using Meeter.Models;
 using Terminal.Gui;
 
@@ -7,44 +8,49 @@ namespace Meeter.TerminalGui.Views;
 
 public partial class MainWindow
 {
-    private readonly IViewModel _viewModel;
-
-    private readonly Dictionary<string, Action<object>> _viewModelUpdateHandlers;
+    private readonly IDisposable _binding;
 
     public MainWindow(IViewModel viewModel)
     {
-        _viewModel = viewModel;
-
         InitializeComponent();
+
+        _binding = ViewModelBinder.Bind(this, viewModel);
 
         _meetingTableData.RowDeleted += OnRowDeleted;
         _meetingTableData.RowChanged += OnRowChanged;
         _meetingsTable.CellActivated += OnCellActivated;
 
-        viewModel.PropertyChanged += OnViewModelPropChanged;
-
-        _viewModelUpdateHandlers = new()
-        {
-            { "Meetings", (newValue) => SetMeetings((IEnumerable<Meeting>)newValue)},
-            { "SelectedPeriodDateTime", (newValue) => SetMeetings((IEnumerable<Meeting>)newValue)},
-        };
+        SetMeeterDateLabel(GetSelectedDayDateTime(viewModel));
     }
 
-    private void OnViewModelPropChanged(object sender, PropertyChangedEventArgs e)
+    [OnViewModelPropertyChanged("Meetings")]
+    public void SetMeetings(IEnumerable<Meeting> meetings)
     {
-        var name = e.PropertyName;
-        HandleUpdate(sender as IViewModel, name);
-        Update();
-    }
+        var table = _meetingsTable.Table;
 
-    private void HandleUpdate(IViewModel sender, string name)
-    {
-        var newValue = sender[name];
-        if (_viewModelUpdateHandlers.TryGetValue(name, out var handler))
+        table.Clear();
+        foreach (var meeting in meetings)
         {
-            handler.Invoke(newValue);
+            table.Rows.Add(
+                meeting.Id,
+                meeting.Subject,
+                meeting.StartDateTime,
+                meeting.EndDateTime,
+                meeting.NotifyBeforeTime,
+                meeting.HasBeenNotifiedAbout
+            );
         }
+
+        UpdateTable();
     }
+
+    [OnViewModelPropertyChanged("SelectedPeriodDateTime")]
+    public void SetMeeterDateLabel(DateTime newValue)
+    {
+        Title = $"Meetings at {newValue:yyyy-MMM-d, dddd}";
+    }
+
+
 
     private void OnCellActivated(TableView.CellActivatedEventArgs obj)
     {
@@ -65,26 +71,6 @@ public partial class MainWindow
 
     }
 
-    public void SetMeetings(IEnumerable<Meeting> meetings)
-    {
-        var table = _meetingsTable.Table;
-
-        table.Clear();
-        foreach (var meeting in meetings)
-        {
-            table.Rows.Add(
-                meeting.Id,
-                meeting.Subject,
-                meeting.StartDateTime,
-                meeting.EndDateTime,
-                meeting.NotifyBeforeTime,
-                meeting.HasBeenNotifiedAbout
-                );
-        }
-
-        _meetingsTable.Update();
-    }
-
     protected override void Dispose(bool disposing)
     {
         if (_meetingTableData != default)
@@ -98,13 +84,18 @@ public partial class MainWindow
             _meetingsTable.CellActivated -= OnCellActivated;
         }
 
-        _viewModel.PropertyChanged -= OnViewModelPropChanged;
+        _binding?.Dispose();
 
         base.Dispose(disposing);
     }
 
-    private void Update()
+    private void UpdateTable()
     {
         _meetingsTable.Update();
+    }
+
+    private static DateTime GetSelectedDayDateTime(IViewModel viewModel)
+    {
+        return (DateTime)viewModel["SelectedPeriodDateTime"];
     }
 }
