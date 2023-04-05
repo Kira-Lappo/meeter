@@ -57,9 +57,9 @@ public class ViewModelBinder
     {
         return viewType
             .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-            .Where(m => m.GetCustomAttributes<OnViewModelPropertyChangedAttribute>().Any())
+            .Where(m => m.GetCustomAttributes<OnPropertyChangedAttribute>().Any())
             .ToDictionary<MethodInfo, string, Action<View, object>>(
-                m => m.GetCustomAttribute<OnViewModelPropertyChangedAttribute>().PropertyName,
+                m => m.GetCustomAttribute<OnPropertyChangedAttribute>().PropertyName,
                 m => (view, newValue) => m.Invoke(view, new[] { newValue }));
     }
 

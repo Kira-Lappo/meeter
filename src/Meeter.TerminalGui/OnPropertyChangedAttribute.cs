@@ -1,9 +1,9 @@
 ﻿namespace Meeter.TerminalGui;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class OnViewModelPropertyChangedAttribute : Attribute
+public class OnPropertyChangedAttribute : Attribute
 {
-    public OnViewModelPropertyChangedAttribute(string propertyName)
+    public OnPropertyChangedAttribute(string propertyName)
     {
         PropertyName = propertyName;
     }

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Meeter.TerminalGui;
 
-public class ViewModel : IViewModel
+public abstract class ViewModel : IViewModel
 {
     private readonly Dictionary<string, Func<object>> _propertyBag;
 

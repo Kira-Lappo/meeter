@@ -6,6 +6,9 @@ namespace Meeter.TerminalGui.Views;
 
 public partial class MainWindow
 {
+    private const string SelectedPeriodDateTimePropName = "SelectedPeriodDateTime";
+    private const string MeetingsPropName = "Meetings";
+
     private readonly IDisposable _binding;
 
     public MainWindow(IViewModel viewModel)
@@ -21,7 +24,7 @@ public partial class MainWindow
         SetMeeterDateLabel(GetSelectedDayDateTime(viewModel));
     }
 
-    [OnViewModelPropertyChanged("Meetings")]
+    [OnPropertyChanged(MeetingsPropName)]
     public void SetMeetings(IEnumerable<Meeting> meetings)
     {
         var table = _meetingsTable.Table;
@@ -42,13 +45,11 @@ public partial class MainWindow
         UpdateTable();
     }
 
-    [OnViewModelPropertyChanged("SelectedPeriodDateTime")]
+    [OnPropertyChanged(SelectedPeriodDateTimePropName)]
     public void SetMeeterDateLabel(DateTime newValue)
     {
         Title = $"Meetings at {newValue:yyyy-MMM-d, dddd}";
     }
-
-
 
     private void OnCellActivated(TableView.CellActivatedEventArgs obj)
     {
@@ -94,6 +95,6 @@ public partial class MainWindow
 
     private static DateTime GetSelectedDayDateTime(IViewModel viewModel)
     {
-        return (DateTime)viewModel["SelectedPeriodDateTime"];
+        return (DateTime)viewModel[SelectedPeriodDateTimePropName];
     }
 }
