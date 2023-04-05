@@ -1,86 +1,156 @@
 using System.Data;
-using Meeter.Models;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using Meeter.TerminalGui.ViewModels;
+using ReactiveUI;
 using Terminal.Gui;
 
 namespace Meeter.TerminalGui.Views;
 
-public partial class MainWindow
+public class MainWindow : Window, IViewFor<MainWindowViewModel>
 {
-    private readonly IViewModel _viewModel;
-    private const string SelectedPeriodDateTimePropName = "SelectedPeriodDateTime";
-    private const string MeetingsPropName = "Meetings";
+    private readonly CompositeDisposable _disposable = new();
 
-    private readonly IDisposable _binding;
-
-    public MainWindow(IViewModel viewModel)
+    public MainWindow(MainWindowViewModel viewModel)
     {
-        InitializeComponent();
+        ViewModel = viewModel;
+        Initialize();
 
-        _viewModel = viewModel;
-        _binding = ViewModelBinder.Bind(this, viewModel);
-
-        _meetingsTable.CellActivated += OnCellActivated;
-
-        SetTitle(GetSelectedDayDateTime(viewModel));
+        ViewModel.GenerateDummyDataCommand.Execute()
+            .Wait();
     }
 
-    [OnPropertyChanged(MeetingsPropName)]
-    public void SetMeetings(IEnumerable<Meeting> meetings)
+    object IViewFor.ViewModel
     {
-        var table = _meetingsTable.Table;
+        get => ViewModel;
+        set => ViewModel = value as MainWindowViewModel
+                           ?? throw new ArgumentException("Should be of AppViewModel type", nameof(value));
+    }
 
-        table.Clear();
-        foreach (var meeting in meetings)
+    public MainWindowViewModel ViewModel { get; set; }
+
+    public TableView MeetingsTable { get; set; }
+
+    private void Initialize()
+    {
+        Width              = Dim.Fill();
+        Height             = Dim.Fill();
+        X                  = 0;
+        Y                  = 0;
+        Modal              = false;
+        Border.BorderStyle = BorderStyle.Single;
+        TextAlignment      = TextAlignment.Left;
+
+        this.OneWayBind(ViewModel,
+                vm => vm.SelectedPeriodDateTime,
+                v => v.Title,
+                dateTime => $"Meetings for {dateTime:yyyy-MMMM-dd, dddd}")
+            .DisposeWith(_disposable);
+
+        MeetingsTable = new TableView()
         {
-            table.Rows.Add(
-                meeting.Id,
-                meeting.Subject,
-                meeting.StartDateTime,
-                meeting.EndDateTime,
-                meeting.NotifyBeforeTime,
-                meeting.HasBeenNotifiedAbout
-            );
+            X             = 0,
+            Y             = 0,
+            Width         = Dim.Fill(),
+            Height        = Dim.Fill(),
+            FullRowSelect = true,
+        };
+
+        this.OneWayBind(ViewModel,
+                vm => vm.Meetings,
+                v => v.MeetingsTable.Table)
+            .DisposeWith(_disposable);
+
+        var scrollView = new ScrollView()
+        {
+            AutoHideScrollBars            = true,
+            ShowHorizontalScrollIndicator = false,
+            ShowVerticalScrollIndicator   = true,
+        };
+
+        scrollView.Add(MeetingsTable);
+
+        Add(scrollView);
+    }
+
+    private static View CreateInputField(DataColumn column)
+    {
+        if (column.DataType == typeof(DateTime))
+        {
+            return new DateField();
         }
 
-        UpdateTable();
+        if (column.DataType == typeof(bool))
+        {
+            return new CheckBox();
+        }
+
+        if (column.DataType == typeof(TimeSpan))
+        {
+            return new TimeField();
+        }
+
+        return new TextField();
     }
 
-    [OnPropertyChanged(SelectedPeriodDateTimePropName)]
-    public void SetTitle(DateTime newValue)
+    private Dialog CreateMeetingEditDialog(DataRow dataRow)
     {
-        Title = $"Meetings at {newValue:yyyy-MMM-d, dddd}";
+        var dialog = new Dialog();
+        var columns = dataRow.Table.Columns
+            .Cast<DataColumn>()
+            .Indexed();
+
+        foreach (var (column, i) in columns)
+        {
+            var title = column.Caption;
+            var label = new Label()
+            {
+                Y             = i,
+                Width         = Dim.Percent(50),
+                TextAlignment = TextAlignment.Right,
+                Text          = title,
+            };
+
+            var inputField = CreateInputField(column);
+
+            inputField.Id            = CreateInputId(column.ColumnName);
+            inputField.X             = Pos.Percent(50);
+            inputField.Y             = i;
+            inputField.Width         = Dim.Percent(50);
+            inputField.TextAlignment = TextAlignment.Left;
+            inputField.Text          = dataRow[column]?.ToString();
+
+            if (inputField is TextField textField)
+            {
+                textField.ReadOnly = column.ReadOnly;
+            }
+
+            dialog.Add(label, inputField);
+        }
+
+        var saveButton = new Button();
+        saveButton.Text    =  "Save";
+        saveButton.Clicked += () => { dialog.RequestStop(); };
+
+        dialog.AddButton(saveButton);
+
+        var cancelButton = new Button();
+        cancelButton.Text    =  "Cancel";
+        cancelButton.Clicked += () => { dialog.RequestStop(); };
+
+        dialog.AddButton(cancelButton);
+
+        return dialog;
     }
 
-    private void OnCellActivated(TableView.CellActivatedEventArgs args)
+    private static string CreateInputId(string columnName)
     {
-        var dataRow = args.Table.Rows[args.Row];
-        var dialog = CreateMeetingEditDialog(dataRow);
-        Application.Run(dialog);
+        return $"edit_meeting_{columnName}";
     }
 
     protected override void Dispose(bool disposing)
     {
-        if (_meetingTableData != default)
-        {
-        }
-
-        if (_meetingsTable != default)
-        {
-            _meetingsTable.CellActivated += OnCellActivated;
-        }
-
-        _binding?.Dispose();
-
+        _disposable.Dispose();
         base.Dispose(disposing);
-    }
-
-    private void UpdateTable()
-    {
-        _meetingsTable.Update();
-    }
-
-    private static DateTime GetSelectedDayDateTime(IViewModel viewModel)
-    {
-        return (DateTime)viewModel[SelectedPeriodDateTimePropName];
     }
 }
