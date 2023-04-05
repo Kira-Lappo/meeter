@@ -6,6 +6,7 @@ namespace Meeter.TerminalGui.Views;
 
 public partial class MainWindow
 {
+    private readonly IViewModel _viewModel;
     private const string SelectedPeriodDateTimePropName = "SelectedPeriodDateTime";
     private const string MeetingsPropName = "Meetings";
 
@@ -15,13 +16,12 @@ public partial class MainWindow
     {
         InitializeComponent();
 
+        _viewModel = viewModel;
         _binding = ViewModelBinder.Bind(this, viewModel);
 
-        _meetingTableData.RowDeleted += OnRowDeleted;
-        _meetingTableData.RowChanged += OnRowChanged;
         _meetingsTable.CellActivated += OnCellActivated;
 
-        SetMeeterDateLabel(GetSelectedDayDateTime(viewModel));
+        SetTitle(GetSelectedDayDateTime(viewModel));
     }
 
     [OnPropertyChanged(MeetingsPropName)]
@@ -46,41 +46,27 @@ public partial class MainWindow
     }
 
     [OnPropertyChanged(SelectedPeriodDateTimePropName)]
-    public void SetMeeterDateLabel(DateTime newValue)
+    public void SetTitle(DateTime newValue)
     {
         Title = $"Meetings at {newValue:yyyy-MMM-d, dddd}";
     }
 
-    private void OnCellActivated(TableView.CellActivatedEventArgs obj)
+    private void OnCellActivated(TableView.CellActivatedEventArgs args)
     {
-    }
-
-    private void OnRowChanged(object sender, DataRowChangeEventArgs e)
-    {
-
-    }
-
-    private void OnRowDeleted(object sender, DataRowChangeEventArgs e)
-    {
-        var meetingId = e.Row.Field<Guid>("Id");
-        if (meetingId == Guid.Empty)
-        {
-            return;
-        }
-
+        var dataRow = args.Table.Rows[args.Row];
+        var dialog = CreateMeetingEditDialog(dataRow);
+        Application.Run(dialog);
     }
 
     protected override void Dispose(bool disposing)
     {
         if (_meetingTableData != default)
         {
-            _meetingTableData.RowDeleted -= OnRowDeleted;
-            _meetingTableData.RowChanged -= OnRowChanged;
         }
 
         if (_meetingsTable != default)
         {
-            _meetingsTable.CellActivated -= OnCellActivated;
+            _meetingsTable.CellActivated += OnCellActivated;
         }
 
         _binding?.Dispose();

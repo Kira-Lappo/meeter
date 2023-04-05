@@ -6,14 +6,14 @@ namespace Meeter.TerminalGui;
 
 public class ViewModelBinder
 {
-    private static readonly Dictionary<Type, Dictionary<string, Action<View, object>>> ViewBinds = new();
+    private static readonly Dictionary<Type, Dictionary<string, Action<View, object>>> ViewOutBinds = new();
 
     public static IDisposable Bind(View view, IViewModel viewModel)
     {
         var viewType = view.GetType();
-        if (!ViewBinds.ContainsKey(viewType))
+        if (!ViewOutBinds.ContainsKey(viewType))
         {
-            ViewBinds[viewType] = GetPropertyChangedHandlers(viewType);
+            ViewOutBinds[viewType] = GetPropertyChangedHandlers(viewType);
         }
 
         viewModel.PropertyChanged += OnViewModelOnPropertyChanged;
@@ -35,7 +35,7 @@ public class ViewModelBinder
             return;
         }
 
-        if (!ViewBinds.TryGetValue(view.GetType(), out var handlers))
+        if (!ViewOutBinds.TryGetValue(view.GetType(), out var handlers))
         {
             return;
         }
