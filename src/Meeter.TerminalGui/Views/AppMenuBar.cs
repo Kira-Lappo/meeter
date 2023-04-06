@@ -1,13 +1,12 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Meeter.TerminalGui.ViewModels;
-using ReactiveMarbles.ObservableEvents;
 using ReactiveUI;
 using Terminal.Gui;
 
 namespace Meeter.TerminalGui.Views;
 
-public class AppMenuBar : Window, IViewFor<MainWindowViewModel>
+public class AppMenuBar : MenuBar, IViewFor<MainWindowViewModel>
 {
     private readonly CompositeDisposable _disposable = new();
     public AppMenuBar(MainWindowViewModel viewModel)
@@ -43,9 +42,7 @@ public class AppMenuBar : Window, IViewFor<MainWindowViewModel>
         var testMenuBar = new MenuBarItem("_Test",
             new[] { generateMenuItem, });
 
-        var menu = new MenuBar(new[] { fileBarItem, meetingsMenuBarItem, testMenuBar });
-
-        Add(menu);
+        Menus = new[] { fileBarItem, meetingsMenuBarItem, testMenuBar };
     }
 
     private static Action NotImplemented => () =>

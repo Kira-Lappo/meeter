@@ -1,13 +1,15 @@
+using System.Collections.Specialized;
 using System.Data;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Meeter.TerminalGui.ViewModels;
+using ReactiveMarbles.ObservableEvents;
 using ReactiveUI;
 using Terminal.Gui;
 
 namespace Meeter.TerminalGui.Views;
 
-public class MainWindow : Window, IViewFor<MainWindowViewModel>
+public class MainWindow : WindowFor<MainWindowViewModel>
 {
     private readonly CompositeDisposable _disposable = new();
 
@@ -19,15 +21,6 @@ public class MainWindow : Window, IViewFor<MainWindowViewModel>
         ViewModel.GenerateDummyDataCommand.Execute()
             .Wait();
     }
-
-    object IViewFor.ViewModel
-    {
-        get => ViewModel;
-        set => ViewModel = value as MainWindowViewModel
-                           ?? throw new ArgumentException("Should be of AppViewModel type", nameof(value));
-    }
-
-    public MainWindowViewModel ViewModel { get; set; }
 
     public TableView MeetingsTable { get; set; }
 
@@ -54,98 +47,106 @@ public class MainWindow : Window, IViewFor<MainWindowViewModel>
             Width         = Dim.Fill(),
             Height        = Dim.Fill(),
             FullRowSelect = true,
+            Table         = CreateMeetingsDataTable(),
         };
 
-        this.OneWayBind(ViewModel,
-                vm => vm.Meetings,
-                v => v.MeetingsTable.Table)
+        MeetingsTable.CellActivated += args =>
+        {
+            var item = ViewModel.Meetings[args.Row];
+            var dialog = new MeetingEditDialog(item.Clone());
+            dialog.Events()
+                .Closed
+                .Subscribe(toplevel =>
+                {
+                    var dialog = (MeetingEditDialog)toplevel;
+                    if (dialog.CloseType == DialogCloseType.Ok)
+                    {
+                        dialog.ViewModel.CopyTo(item);
+                    }
+                });
+
+            Application.Run(dialog);
+        };
+
+        ViewModel.Meetings.Events()
+            .CollectionChanged
+            .Subscribe(args =>
+            {
+                if (args.Action == NotifyCollectionChangedAction.Reset)
+                {
+                    MeetingsTable.Table.Clear();
+                    return;
+                }
+
+                if (args.Action == NotifyCollectionChangedAction.Add)
+                {
+                    var table = MeetingsTable.Table;
+                    foreach (MeetingViewModel item in args.NewItems)
+                    {
+                        table.Rows.Add(
+                            item.Subject,
+                            item.StartDateTime,
+                            item.EndDateTime,
+                            item.NotifyBeforeTime,
+                            item.HasBeenNotifiedAbout
+                        );
+                    }
+                }
+
+                MeetingsTable.Update();
+
+            })
             .DisposeWith(_disposable);
 
-        var scrollView = new ScrollView()
+        Add(MeetingsTable);
+    }
+
+    private DataTable CreateMeetingsDataTable()
+    {
+        var table = new DataTable();
+
+        var subjectColumn = new DataColumn()
         {
-            AutoHideScrollBars            = true,
-            ShowHorizontalScrollIndicator = false,
-            ShowVerticalScrollIndicator   = true,
+            Caption    = "Тема",
+            ColumnName = "Subject",
         };
 
-        scrollView.Add(MeetingsTable);
-
-        Add(scrollView);
-    }
-
-    private static View CreateInputField(DataColumn column)
-    {
-        if (column.DataType == typeof(DateTime))
+        var startDate = new DataColumn()
         {
-            return new DateField();
-        }
+            Caption    = "Начало",
+            ColumnName = "StartDateTime",
+            DataType   = typeof(DateTime),
+        };
 
-        if (column.DataType == typeof(bool))
+        var endDate = new DataColumn()
         {
-            return new CheckBox();
-        }
+            Caption    = "Окончание",
+            ColumnName = "EndDateTime",
+            DataType   = typeof(DateTime),
+        };
 
-        if (column.DataType == typeof(TimeSpan))
+        var notifyBefore = new DataColumn()
         {
-            return new TimeField();
-        }
+            Caption    = "Оповещение за",
+            ColumnName = "NotifyBeforeTime",
+            DataType   = typeof(TimeSpan),
+        };
 
-        return new TextField();
-    }
-
-    private Dialog CreateMeetingEditDialog(DataRow dataRow)
-    {
-        var dialog = new Dialog();
-        var columns = dataRow.Table.Columns
-            .Cast<DataColumn>()
-            .Indexed();
-
-        foreach (var (column, i) in columns)
+        var isNotified = new DataColumn()
         {
-            var title = column.Caption;
-            var label = new Label()
-            {
-                Y             = i,
-                Width         = Dim.Percent(50),
-                TextAlignment = TextAlignment.Right,
-                Text          = title,
-            };
+            Caption    = "Уведомление выслано",
+            ColumnName = "HasBeenNotifiedAbout",
+            DataType   = typeof(bool),
+        };
 
-            var inputField = CreateInputField(column);
+        var columns = table.Columns;
+        columns.Add(subjectColumn);
+        columns.Add(startDate);
+        columns.Add(endDate);
+        columns.Add(notifyBefore);
+        columns.Add(isNotified);
 
-            inputField.Id            = CreateInputId(column.ColumnName);
-            inputField.X             = Pos.Percent(50);
-            inputField.Y             = i;
-            inputField.Width         = Dim.Percent(50);
-            inputField.TextAlignment = TextAlignment.Left;
-            inputField.Text          = dataRow[column]?.ToString();
-
-            if (inputField is TextField textField)
-            {
-                textField.ReadOnly = column.ReadOnly;
-            }
-
-            dialog.Add(label, inputField);
-        }
-
-        var saveButton = new Button();
-        saveButton.Text    =  "Save";
-        saveButton.Clicked += () => { dialog.RequestStop(); };
-
-        dialog.AddButton(saveButton);
-
-        var cancelButton = new Button();
-        cancelButton.Text    =  "Cancel";
-        cancelButton.Clicked += () => { dialog.RequestStop(); };
-
-        dialog.AddButton(cancelButton);
-
-        return dialog;
-    }
-
-    private static string CreateInputId(string columnName)
-    {
-        return $"edit_meeting_{columnName}";
+        return table;
     }
 
     protected override void Dispose(bool disposing)

@@ -1,5 +1,7 @@
-﻿using System.Data;
+﻿using System.Collections.ObjectModel;
+using System.Data;
 using System.Reactive;
+using DynamicData;
 using Meeter.Models;
 using Meeter.Services;
 using ReactiveUI;
@@ -19,26 +21,16 @@ public class MainWindowViewModel : ReactiveObject
         _dummyDataGenerationService = dummyDataGenerationService;
         _meetingService             = meetingService;
 
-        Meetings = CreateMeetingsTable();
-
         GenerateDummyDataCommand = ReactiveCommand.Create(GenerateDummyData);
-        ExitCommand = ReactiveCommand.Create(Exit);
     }
 
     [Reactive]
-    public DataTable Meetings { get; set; }
+    public ObservableCollection<MeetingViewModel> Meetings { get; set; } = new();
 
     [Reactive]
     public DateTime SelectedPeriodDateTime { get; set; } = DateTime.Today;
 
     public ReactiveCommand<Unit, Unit> GenerateDummyDataCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> ExitCommand { get; }
-
-    private void Exit()
-    {
-        Application.RequestStop();
-    }
 
     private void GenerateDummyData()
     {
@@ -49,76 +41,22 @@ public class MainWindowViewModel : ReactiveObject
     private void ReloadMeetings()
     {
         var meetings = _meetingService.GetAllByStartDate(SelectedPeriodDateTime).ToList();
-        var meetingsTable = CreateMeetingsTable();
-        var rows = meetingsTable.Rows;
-        foreach (var m in meetings)
-        {
-            rows.Add(
-                m.Id,
-                m.Subject,
-                m.StartDateTime,
-                m.EndDateTime,
-                m.NotifyBeforeTime,
-                m.HasBeenNotifiedAbout
-            );
-        }
+        var meetingsViewModels = meetings.Select(MapViewModel);
 
-        Meetings = meetingsTable;
+        Meetings.Clear();
+        Meetings.Add(meetingsViewModels);
     }
 
-    private DataTable CreateMeetingsTable()
+    private MeetingViewModel MapViewModel(Meeting m)
     {
-        var table = new DataTable();
-
-        var idColumn = new DataColumn()
+        return new MeetingViewModel
         {
-            ColumnName = "Id",
-            Unique     = true,
-            ReadOnly   = true,
+            Id                   = m.Id,
+            Subject              = m.Subject,
+            StartDateTime        = m.StartDateTime,
+            EndDateTime          = m.EndDateTime,
+            NotifyBeforeTime     = m.NotifyBeforeTime,
+            HasBeenNotifiedAbout = m.HasBeenNotifiedAbout,
         };
-
-        var subjectColumn = new DataColumn()
-        {
-            Caption    = "Тема",
-            ColumnName = "Subject",
-        };
-
-        var startDate = new DataColumn()
-        {
-            Caption    = "Начало",
-            ColumnName = "StartDateTime",
-            DataType   = typeof(DateTime),
-        };
-
-        var endDate = new DataColumn()
-        {
-            Caption    = "Окончание",
-            ColumnName = "EndDateTime",
-            DataType   = typeof(DateTime),
-        };
-
-        var notifyBefore = new DataColumn()
-        {
-            Caption    = "Оповещение за",
-            ColumnName = "NotifyBeforeTime",
-            DataType   = typeof(TimeSpan),
-        };
-
-        var isNotified = new DataColumn()
-        {
-            Caption    = "Уведомление выслано",
-            ColumnName = "HasBeenNotifiedAbout",
-            DataType   = typeof(bool),
-        };
-
-        var columns = table.Columns;
-        columns.Add(idColumn);
-        columns.Add(subjectColumn);
-        columns.Add(startDate);
-        columns.Add(endDate);
-        columns.Add(notifyBefore);
-        columns.Add(isNotified);
-
-        return table;
     }
 }
