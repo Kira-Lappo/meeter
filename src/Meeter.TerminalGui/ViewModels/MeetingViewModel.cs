@@ -22,6 +22,11 @@ public class MeetingViewModel : ReactiveObject
     [Reactive]
     public bool HasBeenNotifiedAbout { get; set; }
 
+    public override string ToString()
+    {
+        return $"{nameof(Id)}: {Id}, {nameof(Subject)}: {Subject}, {nameof(StartDateTime)}: {StartDateTime}, {nameof(EndDateTime)}: {EndDateTime}, {nameof(NotifyBeforeTime)}: {NotifyBeforeTime}, {nameof(HasBeenNotifiedAbout)}: {HasBeenNotifiedAbout}";
+    }
+
     public MeetingViewModel Clone()
     {
         var clone = new MeetingViewModel();

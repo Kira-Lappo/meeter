@@ -22,7 +22,7 @@ public class MainWindow : WindowFor<MainWindowViewModel>
             .Wait();
     }
 
-    public TableView MeetingsTable { get; set; }
+    public ListView MeetingsList { get; set; }
 
     private void Initialize()
     {
@@ -40,19 +40,17 @@ public class MainWindow : WindowFor<MainWindowViewModel>
                 dateTime => $"Meetings for {dateTime:yyyy-MMMM-dd, dddd}")
             .DisposeWith(_disposable);
 
-        MeetingsTable = new TableView()
+        MeetingsList = new ListView()
         {
             X             = 0,
             Y             = 0,
             Width         = Dim.Fill(),
             Height        = Dim.Fill(),
-            FullRowSelect = true,
-            Table         = CreateMeetingsDataTable(),
         };
 
-        MeetingsTable.CellActivated += args =>
+        MeetingsList.OpenSelectedItem += args =>
         {
-            var item = ViewModel.Meetings[args.Row];
+            var item = (MeetingViewModel)args.Value;
             var dialog = new MeetingEditDialog(item.Clone());
             dialog.Events()
                 .Closed
@@ -74,31 +72,15 @@ public class MainWindow : WindowFor<MainWindowViewModel>
             {
                 if (args.Action == NotifyCollectionChangedAction.Reset)
                 {
-                    MeetingsTable.Table.Clear();
+                    MeetingsList.Clear();
                     return;
                 }
 
-                if (args.Action == NotifyCollectionChangedAction.Add)
-                {
-                    var table = MeetingsTable.Table;
-                    foreach (MeetingViewModel item in args.NewItems)
-                    {
-                        table.Rows.Add(
-                            item.Subject,
-                            item.StartDateTime,
-                            item.EndDateTime,
-                            item.NotifyBeforeTime,
-                            item.HasBeenNotifiedAbout
-                        );
-                    }
-                }
-
-                MeetingsTable.Update();
-
+                MeetingsList.SetSource(ViewModel.Meetings);
             })
             .DisposeWith(_disposable);
 
-        Add(MeetingsTable);
+        Add(MeetingsList);
     }
 
     private DataTable CreateMeetingsDataTable()
