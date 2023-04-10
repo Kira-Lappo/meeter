@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Meeter.Models;
 using Meeter.TerminalGui.ViewModels;
 using NStack;
 using ReactiveMarbles.ObservableEvents;

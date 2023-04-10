@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Reflection;
 using Meeter.TerminalGui.ViewModels;
 using ReactiveMarbles.ObservableEvents;
 using ReactiveUI;

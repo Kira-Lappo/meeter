@@ -3,7 +3,7 @@ using Terminal.Gui;
 
 namespace Meeter.TerminalGui.Views;
 
-public class WindowFor<T> : Window, IViewFor<T> where T : class
+public abstract class WindowFor<T> : Window, IViewFor<T> where T : class
 {
     object IViewFor.ViewModel
     {
