@@ -22,7 +22,7 @@ public class MainWindow : WindowFor<MainWindowViewModel>
             .Wait();
     }
 
-    public ListView MeetingsList { get; set; }
+    public TableView MeetingsList { get; set; }
 
     private void Initialize()
     {
@@ -40,17 +40,33 @@ public class MainWindow : WindowFor<MainWindowViewModel>
                 dateTime => $"Meetings for {dateTime:yyyy-MMMM-dd, dddd}")
             .DisposeWith(_disposable);
 
-        MeetingsList = new ListView()
+        MeetingsList = new TableView
         {
             X             = 0,
             Y             = 0,
             Width         = Dim.Fill(),
             Height        = Dim.Fill(),
+            MultiSelect   = false,
+            FullRowSelect = true,
         };
 
-        MeetingsList.OpenSelectedItem += args =>
+        var table = new DataTable();
+
+        var columns = table.Columns;
+        columns.Add(nameof(MeetingViewModel.Id),                   typeof(Guid));
+        columns.Add(nameof(MeetingViewModel.Subject),              typeof(string));
+        columns.Add(nameof(MeetingViewModel.StartDateTime),        typeof(DateTime));
+        columns.Add(nameof(MeetingViewModel.EndDateTime),          typeof(DateTime));
+        columns.Add(nameof(MeetingViewModel.NotifyBeforeTime),     typeof(TimeSpan));
+        columns.Add(nameof(MeetingViewModel.HasBeenNotifiedAbout), typeof(bool));
+
+        MeetingsList.Table = table;
+
+        MeetingsList.CellActivated += args =>
         {
-            var item = (MeetingViewModel)args.Value;
+            var row = args.Table.Rows[args.Row];
+            var id = row.Field<Guid>(nameof(MeetingViewModel.Id));
+            var item = ViewModel.Meetings.FirstOrDefault(m => m.Id == id);
             var dialog = new MeetingEditDialog(item.Clone());
             dialog.Events()
                 .Closed
@@ -72,11 +88,22 @@ public class MainWindow : WindowFor<MainWindowViewModel>
             {
                 if (args.Action == NotifyCollectionChangedAction.Reset)
                 {
-                    MeetingsList.Clear();
+                    MeetingsList.Table.Clear();
+
                     return;
                 }
 
-                MeetingsList.SetSource(ViewModel.Meetings);
+                foreach (var item in args.NewItems.Cast<MeetingViewModel>())
+                {
+                    MeetingsList.Table.Rows.Add(
+                        item.Id,
+                        item.Subject,
+                        item.StartDateTime,
+                        item.EndDateTime,
+                        item.NotifyBeforeTime,
+                        item.HasBeenNotifiedAbout
+                    );
+                }
             })
             .DisposeWith(_disposable);
 
