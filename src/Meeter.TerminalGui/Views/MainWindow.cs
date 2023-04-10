@@ -50,6 +50,7 @@ public class MainWindow : WindowFor<MainWindowViewModel>
             Height        = Dim.Fill(),
             MultiSelect   = false,
             FullRowSelect = true,
+            ColumnOffset = 2,
         };
 
         MeetingsList.Table = CreateMeetingsDataTable();
@@ -92,6 +93,7 @@ public class MainWindow : WindowFor<MainWindowViewModel>
                 if (args.Action == NotifyCollectionChangedAction.Reset)
                 {
                     MeetingsList.Table.Clear();
+                    MeetingsList.Update();
 
                     return;
                 }
@@ -107,6 +109,8 @@ public class MainWindow : WindowFor<MainWindowViewModel>
                         item.HasBeenNotifiedAbout
                     );
                 }
+
+                MeetingsList.Update();
             })
             .DisposeWith(_disposable);
 
