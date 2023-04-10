@@ -21,7 +21,7 @@ public class MainWindowViewModel : ReactiveObject
         _dummyDataGenerationService = dummyDataGenerationService;
         _meetingService             = meetingService;
 
-        GenerateDummyDataCommand = ReactiveCommand.Create(GenerateDummyData);
+        GenerateDummyData = ReactiveCommand.Create(GenerateDummyDataMethod);
     }
 
     [Reactive]
@@ -30,9 +30,9 @@ public class MainWindowViewModel : ReactiveObject
     [Reactive]
     public DateTime SelectedPeriodDateTime { get; set; } = DateTime.Today;
 
-    public ReactiveCommand<Unit, Unit> GenerateDummyDataCommand { get; }
+    public ReactiveCommand<Unit, Unit> GenerateDummyData { get; }
 
-    private void GenerateDummyData()
+    private void GenerateDummyDataMethod()
     {
         _dummyDataGenerationService.Generate();
         ReloadMeetings();

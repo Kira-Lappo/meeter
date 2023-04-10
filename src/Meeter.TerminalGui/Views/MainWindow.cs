@@ -20,7 +20,7 @@ public class MainWindow : WindowFor<MainWindowViewModel>
         ViewModel = viewModel;
         Initialize();
 
-        ViewModel.GenerateDummyDataCommand.Execute()
+        ViewModel.GenerateDummyData.Execute()
             .Wait();
     }
 

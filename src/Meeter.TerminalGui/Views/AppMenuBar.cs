@@ -36,7 +36,7 @@ public class AppMenuBar : MenuBar, IViewFor<MainWindowViewModel>
 
         var generateMenuItem = new MenuItem("_Generate test data", default, () =>
         {
-            ViewModel.GenerateDummyDataCommand.Execute().Wait();
+            ViewModel.GenerateDummyData.Execute().Wait();
         });
 
         var testMenuBar = new MenuBarItem("_Test",
