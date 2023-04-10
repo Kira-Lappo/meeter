@@ -1,7 +1,9 @@
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Data;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reflection;
 using Meeter.TerminalGui.ViewModels;
 using ReactiveMarbles.ObservableEvents;
 using ReactiveUI;
@@ -50,17 +52,7 @@ public class MainWindow : WindowFor<MainWindowViewModel>
             FullRowSelect = true,
         };
 
-        var table = new DataTable();
-
-        var columns = table.Columns;
-        columns.Add(nameof(MeetingViewModel.Id),                   typeof(Guid));
-        columns.Add(nameof(MeetingViewModel.Subject),              typeof(string));
-        columns.Add(nameof(MeetingViewModel.StartDateTime),        typeof(DateTime));
-        columns.Add(nameof(MeetingViewModel.EndDateTime),          typeof(DateTime));
-        columns.Add(nameof(MeetingViewModel.NotifyBeforeTime),     typeof(TimeSpan));
-        columns.Add(nameof(MeetingViewModel.HasBeenNotifiedAbout), typeof(bool));
-
-        MeetingsList.Table = table;
+        MeetingsList.Table = CreateMeetingsDataTable();
 
         MeetingsList.CellActivated += args =>
         {
@@ -86,6 +78,17 @@ public class MainWindow : WindowFor<MainWindowViewModel>
             .CollectionChanged
             .Subscribe(args =>
             {
+                if (args.OldItems != null)
+                {
+                    foreach (INotifyPropertyChanged item in args.OldItems)
+                        item.PropertyChanged -= MeetingItemPropertyChanged;
+                }
+                if (args.NewItems != null)
+                {
+                    foreach (INotifyPropertyChanged item in args.NewItems)
+                        item.PropertyChanged += MeetingItemPropertyChanged;
+                }
+
                 if (args.Action == NotifyCollectionChangedAction.Reset)
                 {
                     MeetingsList.Table.Clear();
@@ -110,14 +113,34 @@ public class MainWindow : WindowFor<MainWindowViewModel>
         Add(MeetingsList);
     }
 
+    private void MeetingItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        var item = (MeetingViewModel)sender;
+        var row = MeetingsList.Table.Rows.Find(item.Id);
+        if (row == default)
+        {
+            return;
+        }
+
+        row[e.PropertyName] = item.GetType().GetProperty(e.PropertyName)?.GetValue(item);
+    }
+
     private DataTable CreateMeetingsDataTable()
     {
         var table = new DataTable();
+
+        var idColumn = new DataColumn()
+        {
+            Caption    = "Id",
+            ColumnName = "Id",
+            DataType = typeof(Guid),
+        };
 
         var subjectColumn = new DataColumn()
         {
             Caption    = "Тема",
             ColumnName = "Subject",
+            DataType   = typeof(string),
         };
 
         var startDate = new DataColumn()
@@ -149,11 +172,14 @@ public class MainWindow : WindowFor<MainWindowViewModel>
         };
 
         var columns = table.Columns;
+        columns.Add(idColumn);
         columns.Add(subjectColumn);
         columns.Add(startDate);
         columns.Add(endDate);
         columns.Add(notifyBefore);
         columns.Add(isNotified);
+
+        table.PrimaryKey = new[] { idColumn };
 
         return table;
     }
