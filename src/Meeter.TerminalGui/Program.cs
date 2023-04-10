@@ -4,15 +4,18 @@ using Meeter.Services.Stores;
 using Meeter.TerminalGui.ViewModels;
 using Meeter.TerminalGui.Views;
 using ReactiveUI;
+using Splat.ModeDetection;
 using Terminal.Gui;
+
+// https://www.reactiveui.net/docs/guidelines/framework/performance-optimization
+Splat.ModeDetector.OverrideModeDetector(Mode.Run);
+
+RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
 
 Application.Init();
 
-RxApp.TaskpoolScheduler   = TaskPoolScheduler.Default;
-
 try
 {
-
     var store = new MeetingStoreProvider().Get();
     var meetingService = new MeetingService(store);
     var dgs = new DummyDataGenerationService(store);
