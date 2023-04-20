@@ -79,13 +79,14 @@ internal class NotificationSender : INotificationSender
 
     private void SendNotification(Meeting meeting)
     {
-        new ToastContentBuilder()
-            .AddArgument("action",         "viewConversation")
-            .AddArgument("conversationId", ConversationId)
-            .AddText(meeting.Subject)
-            .AddText($"Начало в {GetLocalTimeString(meeting.StartDateTime)}")
-            .AddText($"Окончание в {GetLocalTimeString(meeting.EndDateTime)}")
-            .Show();
+        // Todo [2023/04/20 kira] resolve notification issue
+        // new ToastContentBuilder()
+        //     .AddArgument("action",         "viewConversation")
+        //     .AddArgument("conversationId", ConversationId)
+        //     .AddText(meeting.Subject)
+        //     .AddText($"Начало в {GetLocalTimeString(meeting.StartDateTime)}")
+        //     .AddText($"Окончание в {GetLocalTimeString(meeting.EndDateTime)}")
+        //     .Show();
     }
 
     private static string GetLocalTimeString(DateTime dateTime)
