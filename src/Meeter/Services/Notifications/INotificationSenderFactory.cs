@@ -2,5 +2,5 @@
 
 public interface INotificationSenderFactory
 {
-    INotificationSender Create();
+    INotificationSubmitService Create(INotificationSender sender);
 }

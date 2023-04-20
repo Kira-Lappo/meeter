@@ -4,11 +4,11 @@ namespace Meeter.Services.Notifications;
 
 public class NotificationSenderFactory : INotificationSenderFactory
 {
-    public INotificationSender Create()
+    public INotificationSubmitService Create(INotificationSender sender)
     {
         var dateTimeProvider = new DateTimeProvider();
         var store = new MeetingStoreProvider().Get();
 
-        return new NotificationSender(store, dateTimeProvider);
+        return new NotificationSubmitService(store, dateTimeProvider, sender);
     }
 }

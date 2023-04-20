@@ -8,9 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Terminal.Gui" Version="1.10.0" />
-        <PackageReference Include="ReactiveUI.Fody" Version="18.4.26" />
-        <PackageReference Include="ReactiveUI" Version="18.4.26" />
+        <PackageReference Include="Terminal.Gui" Version="1.10.1" />
+        <PackageReference Include="ReactiveUI.Fody" Version="18.4.34" />
+        <PackageReference Include="ReactiveUI" Version="18.4.34" />
         <PackageReference Include="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.2.3" PrivateAssets="all" />
     </ItemGroup>
 

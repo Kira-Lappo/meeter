@@ -1,24 +1,27 @@
 ﻿using System.Timers;
 using Meeter.Models;
 using Meeter.Services.Stores;
-using Microsoft.Toolkit.Uwp.Notifications;
 using Timer = System.Timers.Timer;
 
 namespace Meeter.Services.Notifications;
 
-internal class NotificationSender : INotificationSender
+internal class NotificationSubmitService : INotificationSubmitService
 {
     private const int ConversationId = 424242;
 
     private readonly IMeetingStore _meetingStore;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly INotificationSender _notificationSender;
 
     private Timer _timer;
 
-    public NotificationSender(IMeetingStore meetingStore, IDateTimeProvider dateTimeProvider)
+    public NotificationSubmitService(IMeetingStore meetingStore,
+        IDateTimeProvider dateTimeProvider,
+        INotificationSender notificationSender)
     {
-        _meetingStore     = meetingStore;
-        _dateTimeProvider = dateTimeProvider;
+        _meetingStore       = meetingStore;
+        _dateTimeProvider   = dateTimeProvider;
+        _notificationSender = notificationSender;
     }
 
     public void Start()
@@ -35,12 +38,17 @@ internal class NotificationSender : INotificationSender
         _timer.Start();
     }
 
-    private void SendNotifications(object sender, ElapsedEventArgs e)
+    public void SendNotifications(object sender, ElapsedEventArgs e)
+    {
+        SendNotifications();
+    }
+
+    public void SendNotifications()
     {
         var meetings = GetMeetingsToNotifyAbout();
         foreach (var meeting in meetings)
         {
-            SendNotification(meeting);
+            _notificationSender.SendNotification(meeting);
 
             meeting.HasBeenNotifiedAbout = true;
             _meetingStore.Update(meeting);
@@ -75,18 +83,6 @@ internal class NotificationSender : INotificationSender
         var notifyAtDateTime = meeting.StartDateTime - meeting.NotifyBeforeTime;
 
         return notifyAtDateTime <= dateTimeBorder;
-    }
-
-    private void SendNotification(Meeting meeting)
-    {
-        // Todo [2023/04/20 kira] resolve notification issue
-        // new ToastContentBuilder()
-        //     .AddArgument("action",         "viewConversation")
-        //     .AddArgument("conversationId", ConversationId)
-        //     .AddText(meeting.Subject)
-        //     .AddText($"Начало в {GetLocalTimeString(meeting.StartDateTime)}")
-        //     .AddText($"Окончание в {GetLocalTimeString(meeting.EndDateTime)}")
-        //     .Show();
     }
 
     private static string GetLocalTimeString(DateTime dateTime)
