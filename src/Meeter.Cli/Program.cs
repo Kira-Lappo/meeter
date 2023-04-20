@@ -1,8 +1,9 @@
 ﻿using Meeter.Cli;
 using Meeter.Services.Notifications;
 
+var sender = new UWPNotificationSender();
 using var notificationSender = new NotificationSenderFactory()
-    .Create();
+    .Create(sender);
 
 notificationSender.Start();
 

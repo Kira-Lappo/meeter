@@ -18,6 +18,7 @@ public static class AppSetup
         var meetingService = new MeetingService(meetingStore);
         var printService = new MeetingsPrintService(meetingService);
         var meetingReader = new MeetingConsoleReader(inputReader, meetingService, dateTimeProvider, printService);
+        var dummyDataGenerator = new DummyDataGenerationService(meetingStore);
 
         var printActionService = new PrintMeetingsMenuAction(inputReader, printService);
         var meetingConsoleFinder = new MeetingConsoleFinder(inputReader, meetingStore, printService, dateTimeProvider);
@@ -31,7 +32,7 @@ public static class AppSetup
 
         var editMeetingMenuAction = new EditMeetingMenuAction(meetingStore, meetingConsoleFinder, meetingReader);
 
-        var dummyDataMenuAction = new DummyDataMenuAction(meetingStore);
+        var dummyDataMenuAction = new DummyDataMenuAction(dummyDataGenerator);
 
         app.Add("Добавить", "1", newMeetingActionService);
         app.Add("Изменить", "2", editMeetingMenuAction);

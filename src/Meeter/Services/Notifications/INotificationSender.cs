@@ -1,6 +1,8 @@
-﻿namespace Meeter.Services.Notifications;
+using Meeter.Models;
 
-public interface INotificationSender : IDisposable
+namespace Meeter.Services.Notifications;
+
+public interface INotificationSender
 {
-    void Start();
+    void SendNotification(Meeting meeting);
 }
